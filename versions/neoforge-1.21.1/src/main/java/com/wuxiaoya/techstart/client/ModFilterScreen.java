@@ -26,7 +26,7 @@ public class ModFilterScreen extends Screen {
     private static final int PANEL_HEIGHT = 209;
     private static final int ATLAS_WIDTH = 256;
     private static final int ATLAS_HEIGHT = 256;
-    private static final int SIDE_BUTTON_X = 176;
+    private static final int SIDE_BUTTON_X = PANEL_WIDTH;
     private static final int SIDE_BUTTON_WIDTH = 24;
     private static final int SIDE_BUTTON_HEIGHT = 24;
     private static final int SWITCH_TO_FILTER_BUTTON_U = 232;

@@ -4,6 +4,12 @@
 
 ---
 
+## [1.0.8] - 2026-04-25
+
+- Prepared the `1.0.8` release metadata and repository links.
+- Updated the project URL to `https://github.com/wu-xiao-ya/AE2-Smart-Pattern-System`.
+- Refreshed the public mod description for release publishing.
+
 ## [1.0.7] - 2026-04-05
 
 ### 🔄 调整

@@ -1,17 +1,17 @@
 ﻿# AE2UEL 智能样板系统 (Smart Pattern System)
 *AE2 Unofficial Extended Life 智能样板系统 - 基于矿物辞典的通配符合成样板*
 
-> 🚀 **v1.0.7 发布！** 详见 [更新日志](CHANGELOG.md)
+> 🚀 **v1.0.8 发布！** 详见 [更新日志](CHANGELOG.md)
 
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.12.2-green.svg)](https://www.minecraft.net/)
 [![Forge](https://img.shields.io/badge/Forge-14.23.5.2847-red.svg)](https://files.minecraftforge.net/)
 [![Java](https://img.shields.io/badge/Java-8+-blue.svg)](https://adoptium.net/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.0.7-orange.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-1.0.8-orange.svg)](CHANGELOG.md)
 
 一个为 AE2UEL (Applied Energistics 2 Unofficial Extended Life) 设计的智能样板系统，通过矿物辞典实现通配符匹配，让单个样板可以自动匹配整个矿物辞典系列（如所有金属锭→板的转换）。
 
-## v1.0.7 更新摘要
+## v1.0.8 更新摘要
 - 新增独立搜索界面，支持从搜索结果跳转到黑白名单对应条目。
 - 新增模组筛选界面（输入/输出分离筛选，左键输入、右键输出）。
 - 模组筛选改为“跟随样板物品”保存（按物品 NBT），不再是全局共享。
@@ -114,7 +114,7 @@
 - **问题反馈**: 在 GitHub 提交 Issue
 - **功能建议**: 在 GitHub 提交 Feature Request
 
-**版本**: v1.0.7 | **Minecraft**: 1.12.2 | **Forge**: 14.23.5.2847+ | **AE2UEL**: 兼容版本
+**版本**: v1.0.8 | **Minecraft**: 1.12.2 | **Forge**: 14.23.5.2847+ | **AE2UEL**: 兼容版本
 
 *基于 CleanroomMC 的 RetroFuturaGradle 构建* | *完全开源，MIT 许可*
 

@@ -23,11 +23,11 @@ import java.util.Set;
 public class PatternSearchScreen extends Screen {
     private static final ResourceLocation TEXTURE =
             ResourceLocation.fromNamespaceAndPath(TechStartForge.MODID, "textures/gui/pattern_editor_sousu.png");
-    private static final int PANEL_WIDTH = 200;
+    private static final int PANEL_WIDTH = 176;
     private static final int PANEL_HEIGHT = 209;
     private static final int ATLAS_WIDTH = 256;
     private static final int ATLAS_HEIGHT = 256;
-    private static final int SIDE_BUTTON_X = 176;
+    private static final int SIDE_BUTTON_X = PANEL_WIDTH;
     private static final int SIDE_BUTTON_WIDTH = 24;
     private static final int SIDE_BUTTON_HEIGHT = 24;
     private static final int SWITCH_TO_FILTER_BUTTON_U = 232;
