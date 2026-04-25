@@ -1,0 +1,177 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0.16,6.2)'
+}
+
+version = mod_version
+group = mod_group_id
+def artifactVersion = "${mod_version}+${minecraft_version}"
+
+base {
+    archivesName = "sampleintegration"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(17)
+    withSourcesJar()
+}
+
+tasks.withType(Jar).configureEach {
+    archiveVersion = artifactVersion
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
+    options.encoding = 'UTF-8'
+}
+
+def commonManifestAttributes = {
+    [
+            'Specification-Title'    : mod_id,
+            'Specification-Vendor'   : mod_authors,
+            'Specification-Version'  : '1',
+            'Implementation-Title'   : project.name,
+            'Implementation-Version' : project.version,
+            'Implementation-Vendor'  : mod_authors,
+            'MixinConfigs'           : 'techstart.mixins.json'
+    ]
+}
+
+minecraft {
+    mappings channel: 'official', version: minecraft_version
+    copyIdeResources = true
+
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        client {
+            property 'forge.enabledGameTestNamespaces', mod_id
+        }
+
+        server {
+            property 'forge.enabledGameTestNamespaces', mod_id
+            args '--nogui'
+        }
+
+        data {
+            workingDirectory project.file('run-data')
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+sourceSets.main.java { srcDir '../shared/common-core/src/main/java' }
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.minecraftforge.net' }
+    maven {
+        name = 'Modmaven'
+        url = 'https://modmaven.dev/'
+        content {
+            includeGroup 'appeng'
+        }
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    // AE2 1.20.1 official Forge artifact (soft integration).
+    compileOnly fg.deobf("appeng:appliedenergistics2-forge:${ae2_version}:api")
+    compileOnly fg.deobf("appeng:appliedenergistics2-forge:${ae2_version}")
+    compileOnly files('D:/桌面/我的世界/GTL/versions/1.20.1-Forge_47.4.10/mods/[通用机械] Mekanism-1.20.1-10.4.16.80.jar')
+    compileOnly files('D:/桌面/我的世界/GTL/versions/1.20.1-Forge_47.4.10/mods/[应用能源：通用机械附属] Applied-Mekanistics-1.4.3.jar')
+    compileOnly "org.spongepowered:mixin:0.8.5"
+    annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
+    // Keep AE2 runtime optional in dev runs; enable with -PenableAe2Runtime=true.
+    if ((findProperty('enableAe2Runtime') ?: 'false').toString().toBoolean()) {
+        runtimeOnly fg.deobf("appeng:appliedenergistics2-forge:${ae2_version}")
+
+        def guideMeLocalJar = file('run/mods/guideme-20.1.14.jar')
+        def guideMeDisabledJar = file('run/mods/_disabled_by_run_dev_safe/guideme-20.1.14.jar')
+        def guideMeRuntimeJar = guideMeLocalJar.exists() ? guideMeLocalJar : (guideMeDisabledJar.exists() ? guideMeDisabledJar : null)
+        if (guideMeRuntimeJar != null) {
+            runtimeOnly files(guideMeRuntimeJar)
+        }
+    }
+
+    // Optional JEI integration: compile against a local JEI jar when available.
+    def jeiLocalJar = file('run/mods/jei-1.20.1-forge-15.20.0.129.jar')
+    def jeiDisabledJar = file('run/mods/_disabled_by_run_dev_safe/jei-1.20.1-forge-15.20.0.129.jar')
+    def jeiCompileJar = jeiLocalJar.exists() ? jeiLocalJar : (jeiDisabledJar.exists() ? jeiDisabledJar : null)
+    if (jeiCompileJar != null) {
+        compileOnly files(jeiCompileJar)
+    }
+}
+
+tasks.named('processResources', ProcessResources).configure {
+    def replaceProperties = [
+            minecraft_version: minecraft_version,
+            forge_version    : forge_version,
+            mod_id           : mod_id,
+            mod_name         : mod_name,
+            mod_version      : mod_version,
+            mod_authors      : mod_authors,
+            mod_description  : mod_description,
+            mod_license      : 'MIT'
+    ]
+    inputs.properties(replaceProperties)
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand(replaceProperties + [project: project])
+    }
+}
+
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes(commonManifestAttributes())
+    }
+    finalizedBy 'reobfJar'
+}
+
+tasks.named('sourcesJar', Jar).configure {
+    archiveVersion = artifactVersion
+}
+
+tasks.register('devJar', Jar) {
+    group = 'build'
+    description = 'Assembles the deobfuscated development jar.'
+    from sourceSets.main.output
+    archiveClassifier = 'dev'
+    manifest {
+        attributes(commonManifestAttributes())
+    }
+}
+
+tasks.named('assemble').configure {
+    dependsOn tasks.named('devJar')
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact jar
+        }
+    }
+    repositories {
+        maven {
+            url = "file://${project.projectDir}/mcmodsrepo"
+        }
+    }
+}
+

@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+FMLCorePlugin: com.lwx1145.techstart.asm.TechStartCorePlugin
+FMLCorePluginContainsFMLMod: true
+MixinConfigs: mixins.sampleintegration.json
+

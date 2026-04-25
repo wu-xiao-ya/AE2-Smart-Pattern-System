@@ -1,0 +1,41 @@
+# Gradle / build outputs
+/build/
+**/build/
+**/.gradle/
+**/out/
+**/bin/
+*.class
+
+# IDE files
+**/.idea/
+**/.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Local run/test environments
+versions/forge-1.12.2/run/
+versions/forge-1.20.1/run/
+versions/forge-1.20.1/run-data/
+versions/forge-1.20.1/run-prod/
+versions/neoforge-1.21.1/runs/
+versions/neoforge-1.21.1/run/
+
+# Generated local repositories
+**/repo/
+**/mcmodsrepo/
+
+# Local backups and temporary diagnostics
+**/backup/
+**/build_compile.out
+**/build_compile.err
+**/crafttweaker.log
+**/*.dot
+**/crash-reports/
+**/logs/
+**/usercache.json
+**/usernamecache.json
+tmp_pattern_grid_zoom.png
+
+# Local dependency archives
+versions/forge-1.20.1/gradle/gradle-*.zip

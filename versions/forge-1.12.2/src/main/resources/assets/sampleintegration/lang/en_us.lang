@@ -1,0 +1,81 @@
+# Items
+item.sampleintegration.pattern_integrations.name=Smart Pattern
+item.sampleintegration.pattern_integrations.desc0=Wildcard pattern item based on Ore Dictionary
+item.sampleintegration.pattern_integrations.desc1=Automatically expands to all registered metal recipes
+
+# Blocks
+tile.sampleintegration.pattern_expander.name=Pattern Expander
+tile.sampleintegration.pattern_expander.desc=Dedicated block for editing and managing smart patterns
+
+# GUI
+gui.sampleintegration.pattern_editor=Smart Pattern Editor
+gui.sampleintegration.pattern_filter=Blacklist / Whitelist
+gui.sampleintegration.input=Input
+gui.sampleintegration.output=Output
+gui.sampleintegration.mode=Mode: %s
+gui.sampleintegration.mode.blacklist=Blacklist
+gui.sampleintegration.mode.whitelist=Whitelist
+gui.sampleintegration.tip_marker=Tip: place a fluid or gas container to add a marker
+gui.sampleintegration.switch_to_filter=Switch to blacklist / whitelist mode
+gui.sampleintegration.switch_to_editor=Switch to smart pattern mode
+gui.sampleintegration.toggle_filter_mode=Toggle blacklist / whitelist
+gui.sampleintegration.open_search=Open search screen
+gui.sampleintegration.open_mod_filter=Open mod filter screen
+gui.sampleintegration.search.title=Recipe Search
+gui.sampleintegration.search.matches=Matches: %s / %s
+gui.sampleintegration.search.tooltip.input=Input: %s
+gui.sampleintegration.search.tooltip.output=Output: %s
+gui.sampleintegration.search.tbd=Reserved (TBD)
+gui.sampleintegration.mod_filter.title=Mod Filter
+gui.sampleintegration.mod_filter.stats=Input blocked: %s | Output blocked: %s | Total mods: %s
+gui.sampleintegration.mod_filter.back=Back to search
+gui.sampleintegration.mod_filter.clear=Clear all filters
+gui.sampleintegration.mod_filter.tooltip.left=Left click: toggle input exclusion
+gui.sampleintegration.mod_filter.tooltip.right=Right click: toggle output exclusion
+gui.sampleintegration.mod_filter.tooltip.state=State - Input: %s, Output: %s
+gui.sampleintegration.mod_filter.state.allowed=Allowed
+gui.sampleintegration.mod_filter.state.excluded=Excluded
+gui.sampleintegration.amount.set=Set Amount
+gui.sampleintegration.amount.set_mb=Set Amount (mB)
+gui.sampleintegration.filter.empty_line=%s: <empty>
+gui.sampleintegration.filter.ore_line=%s: %s
+gui.sampleintegration.filter.more=- ...
+
+# Messages
+message.sampleintegration.pattern_cleared=Pattern data cleared
+message.sampleintegration.hint_edit=Hint: Right-click the smart pattern directly to edit
+message.sampleintegration.no_pattern=Please hold a Smart Pattern item in your main hand
+message.sampleintegration.pattern_saved=Pattern saved
+message.sampleintegration.invalid_amount=Invalid amount
+
+# Tooltips
+tooltip.sampleintegration.encoded=Encoded: %s
+tooltip.sampleintegration.filter_mode=Filter mode: %s
+tooltip.sampleintegration.filter_mode_whitelist=Whitelist
+tooltip.sampleintegration.filter_mode_blacklist=Blacklist
+tooltip.sampleintegration.bool_yes=Yes
+tooltip.sampleintegration.bool_no=No
+tooltip.sampleintegration.input_count=Input entries: %s
+tooltip.sampleintegration.output_count=Output entries: %s
+tooltip.sampleintegration.input_item=Input %s: %s x%s
+tooltip.sampleintegration.output_item=Output %s: %s x%s
+tooltip.sampleintegration.input_ore=Input %s: %s x%s
+tooltip.sampleintegration.input_fluid=Fluid Input %s: %s x%smB
+tooltip.sampleintegration.input_gas=Gas Input %s: %s x%smB
+tooltip.sampleintegration.output_ore=Output %s: %s x%s
+tooltip.sampleintegration.output_fluid=Fluid Output %s: %s x%smB
+tooltip.sampleintegration.output_gas=Gas Output %s: %s x%smB
+tooltip.sampleintegration.ore_type=Ore Type: %s
+tooltip.sampleintegration.open_editor=Right-click to open editor
+tooltip.sampleintegration.open_pattern_editor=Right-click to open pattern editor directly
+tooltip.sampleintegration.mark_hint=Shift + Right-click to clear encoded data.
+
+# Commands
+command.sampleintegration.expandpattern.usage=/expandpattern - Expand the wildcard pattern in your hand into virtual patterns.
+command.sampleintegration.expandpattern.only_player=Only players can run this command.
+command.sampleintegration.expandpattern.hold_pattern=Hold a smart pattern in your main hand.
+command.sampleintegration.expandpattern.not_encoded=This pattern is not encoded.
+command.sampleintegration.expandpattern.not_wildcard=This is not a wildcard pattern.
+command.sampleintegration.expandpattern.expanding=Expanding wildcard pattern: %s -> %s
+command.sampleintegration.expandpattern.expanded=Expanded into %s virtual patterns.
+command.sampleintegration.expandpattern.created=Created %s virtual patterns.
