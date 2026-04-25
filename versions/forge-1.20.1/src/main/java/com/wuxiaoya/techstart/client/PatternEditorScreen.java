@@ -59,24 +59,36 @@ public class PatternEditorScreen extends AbstractContainerScreen<PatternEditorMe
     private static final int LIST_COLS = 3;
     private static final int SLOT_SIZE = 18;
     private static final int PANEL_WIDTH = 176;
-    private static final int SIDE_BUTTON_X = 180;
+    private static final int SIDE_BUTTON_X = PANEL_WIDTH;
     private static final int SIDE_BUTTON_WIDTH = 24;
     private static final int SIDE_BUTTON_HEIGHT = 24;
-    private static final int SIDE_BUTTON_U = 232;
+    private static final int SWITCH_TO_FILTER_BUTTON_U = 232;
+    private static final int SWITCH_TO_FILTER_BUTTON_V = 0;
+    private static final int SWITCH_TO_EDITOR_BUTTON_U = 232;
+    private static final int SWITCH_TO_EDITOR_BUTTON_V = 25;
+    private static final int MODE_BUTTON_U = 207;
+    private static final int MODE_BUTTON_V = 0;
+    private static final int SEARCH_BUTTON_U = 207;
+    private static final int SEARCH_BUTTON_V = 25;
+    private static final int MOD_FILTER_BUTTON_U = 207;
+    private static final int MOD_FILTER_BUTTON_V = 50;
     private static final int SEARCH_HIGHLIGHT_COLOR = 0x66FFFF00;
     private static final int INPUT_X = 24;
     private static final int INPUT_Y = 35;
     private static final int OUTPUT_X = 96;
     private static final int OUTPUT_Y = 35;
-    private static final int SWITCH_X = SIDE_BUTTON_X;
-    private static final int SWITCH_Y = 0;
+    private static final int EDITOR_X = SIDE_BUTTON_X;
+    private static final int EDITOR_Y = 0;
+    private static final int FILTER_X = SIDE_BUTTON_X;
+    private static final int FILTER_Y = 24;
     private static final int MODE_X = SIDE_BUTTON_X;
-    private static final int MODE_Y = 24;
+    private static final int MODE_Y = 48;
     private static final int SEARCH_X = SIDE_BUTTON_X;
-    private static final int SEARCH_Y = 48;
+    private static final int SEARCH_Y = 72;
     private static final int MOD_FILTER_X = SIDE_BUTTON_X;
-    private static final int MOD_FILTER_Y = 72;
+    private static final int MOD_FILTER_Y = 96;
 
+    private InvisibleButton editorButton;
     private InvisibleButton switchButton;
     private InvisibleButton modeButton;
     private InvisibleButton searchButton;
@@ -98,27 +110,20 @@ public class PatternEditorScreen extends AbstractContainerScreen<PatternEditorMe
     protected void init() {
         super.init();
 
-        this.switchButton = this.addRenderableWidget(new InvisibleButton(
-                this.leftPos + SWITCH_X,
-                this.topPos + SWITCH_Y,
+        this.editorButton = this.addRenderableWidget(new InvisibleButton(
+                this.leftPos + EDITOR_X,
+                this.topPos + EDITOR_Y,
                 SIDE_BUTTON_WIDTH,
                 SIDE_BUTTON_HEIGHT,
-                Component.literal("switch"),
-                Component.translatable("gui.techstart.switch_to_filter"),
+                Component.literal("editor"),
+                Component.translatable("gui.techstart.switch_to_editor"),
                 ignored -> {
-                    if (!this.filterView) {
-                        this.menu.refreshPatternStackSnapshot();
-                        this.selectedFilterEntries.clear();
-                        this.selectedFilterEntries.addAll(this.menu.getFilterEntriesSnapshot());
-                    }
-                    this.filterView = !this.filterView;
-                    if (!this.filterView) {
-                        this.listScroll = 0;
-                    }
+                    this.filterView = false;
+                    this.listScroll = 0;
                     updateModeButtons();
                 }
         ));
-        this.switchButton.setSprite(SIDE_BUTTON_U, 0, 0, 256, 256);
+        this.editorButton.setSprite(SWITCH_TO_EDITOR_BUTTON_U, SWITCH_TO_EDITOR_BUTTON_V, SWITCH_TO_EDITOR_BUTTON_V, 256, 256);
         this.modeButton = this.addRenderableWidget(new InvisibleButton(
                 this.leftPos + MODE_X,
                 this.topPos + MODE_Y,
@@ -134,23 +139,10 @@ public class PatternEditorScreen extends AbstractContainerScreen<PatternEditorMe
                     sendMenuButton(next);
                     this.selectedFilterEntries.clear();
                     this.listScroll = 0;
+                    updateModeButtons();
                 }
         ));
-        this.modeButton.setSprite(SIDE_BUTTON_U, 24, 24, 256, 256);
-        this.modFilterButton = this.addRenderableWidget(new InvisibleButton(
-                this.leftPos + MOD_FILTER_X,
-                this.topPos + MOD_FILTER_Y,
-                SIDE_BUTTON_WIDTH,
-                SIDE_BUTTON_HEIGHT,
-                Component.literal("mod"),
-                Component.translatable("gui.techstart.open_mod_filter"),
-                ignored -> {
-                    if (this.minecraft != null) {
-                        this.minecraft.setScreen(new ModFilterScreen(this, this.menu));
-                    }
-                }
-        ));
-        this.modFilterButton.setSprite(SIDE_BUTTON_U, 72, 72, 256, 256);
+        this.modeButton.setSprite(MODE_BUTTON_U, MODE_BUTTON_V, MODE_BUTTON_V, 256, 256);
         this.searchButton = this.addRenderableWidget(new InvisibleButton(
                 this.leftPos + SEARCH_X,
                 this.topPos + SEARCH_Y,
@@ -160,11 +152,45 @@ public class PatternEditorScreen extends AbstractContainerScreen<PatternEditorMe
                 Component.translatable("gui.techstart.open_search"),
                 ignored -> {
                     if (this.minecraft != null) {
+                        this.menu.refreshPatternStackSnapshot();
                         this.minecraft.setScreen(new PatternSearchScreen(this, this.menu));
                     }
                 }
         ));
-        this.searchButton.setSprite(SIDE_BUTTON_U, 48, 48, 256, 256);
+        this.searchButton.setSprite(SEARCH_BUTTON_U, SEARCH_BUTTON_V, SEARCH_BUTTON_V, 256, 256);
+        this.modFilterButton = this.addRenderableWidget(new InvisibleButton(
+                this.leftPos + MOD_FILTER_X,
+                this.topPos + MOD_FILTER_Y,
+                SIDE_BUTTON_WIDTH,
+                SIDE_BUTTON_HEIGHT,
+                Component.literal("mod"),
+                Component.translatable("gui.techstart.open_mod_filter"),
+                ignored -> {
+                    if (this.minecraft != null) {
+                        this.menu.refreshPatternStackSnapshot();
+                        this.minecraft.setScreen(new ModFilterScreen(this, this.menu));
+                    }
+                }
+        ));
+        this.modFilterButton.setSprite(MOD_FILTER_BUTTON_U, MOD_FILTER_BUTTON_V, MOD_FILTER_BUTTON_V, 256, 256);
+        this.switchButton = this.addRenderableWidget(new InvisibleButton(
+                this.leftPos + FILTER_X,
+                this.topPos + FILTER_Y,
+                SIDE_BUTTON_WIDTH,
+                SIDE_BUTTON_HEIGHT,
+                Component.literal("filter"),
+                Component.translatable("gui.techstart.switch_to_filter"),
+                ignored -> {
+                    this.menu.refreshPatternStackSnapshot();
+                    this.selectedFilterEntries.clear();
+                    this.selectedFilterEntries.addAll(this.menu.getFilterEntriesSnapshot());
+                    this.highlightedFilterEntryIds.clear();
+                    this.filterView = true;
+                    this.listScroll = 0;
+                    updateModeButtons();
+                }
+        ));
+        this.switchButton.setSprite(SWITCH_TO_FILTER_BUTTON_U, SWITCH_TO_FILTER_BUTTON_V, SWITCH_TO_FILTER_BUTTON_V, 256, 256);
 
         this.selectedFilterEntries.clear();
         this.selectedFilterEntries.addAll(this.menu.getFilterEntriesSnapshot());
@@ -314,11 +340,17 @@ public class PatternEditorScreen extends AbstractContainerScreen<PatternEditorMe
         }
     }
     private void updateModeButtons() {
-        if (this.switchButton == null || this.modeButton == null || this.searchButton == null || this.modFilterButton == null) {
+        if (this.editorButton == null || this.switchButton == null || this.modeButton == null || this.searchButton == null || this.modFilterButton == null) {
             return;
         }
-        this.modeButton.visible = this.filterView;
-        this.modeButton.active = this.filterView;
+        this.editorButton.visible = true;
+        this.editorButton.active = true;
+        this.editorButton.setHint(Component.translatable("gui.techstart.switch_to_editor"));
+        this.switchButton.visible = true;
+        this.switchButton.active = true;
+        this.switchButton.setHint(Component.translatable("gui.techstart.switch_to_filter"));
+        this.modeButton.visible = true;
+        this.modeButton.active = true;
         this.modeButton.setMessage(getModeComponent());
         this.modeButton.setHint(Component.translatable("gui.techstart.toggle_filter_mode"));
         this.searchButton.visible = true;
@@ -327,9 +359,6 @@ public class PatternEditorScreen extends AbstractContainerScreen<PatternEditorMe
         this.modFilterButton.visible = true;
         this.modFilterButton.active = true;
         this.modFilterButton.setHint(Component.translatable("gui.techstart.open_mod_filter"));
-        this.switchButton.setHint(Component.translatable(this.filterView
-                ? "gui.techstart.switch_to_editor"
-                : "gui.techstart.switch_to_filter"));
         updatePatternSlotVisibility();
     }
 
@@ -504,31 +533,13 @@ public class PatternEditorScreen extends AbstractContainerScreen<PatternEditorMe
     }
 
     private void renderButtonTooltips(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        if (this.switchButton != null && this.switchButton.visible && this.switchButton.isMouseOver(mouseX, mouseY)) {
-            Component tip = this.switchButton.getHint();
-            if (tip != null && tip != CommonComponents.EMPTY) {
-                guiGraphics.renderTooltip(this.font, tip, mouseX, mouseY);
-            }
-            return;
-        }
-        if (this.modeButton != null && this.modeButton.visible && this.modeButton.isMouseOver(mouseX, mouseY)) {
-            Component tip = this.modeButton.getHint();
-            if (tip != null && tip != CommonComponents.EMPTY) {
-                guiGraphics.renderTooltip(this.font, tip, mouseX, mouseY);
-            }
-            return;
-        }
-        if (this.searchButton != null && this.searchButton.visible && this.searchButton.isMouseOver(mouseX, mouseY)) {
-            Component tip = this.searchButton.getHint();
-            if (tip != null && tip != CommonComponents.EMPTY) {
-                guiGraphics.renderTooltip(this.font, tip, mouseX, mouseY);
-            }
-            return;
-        }
-        if (this.modFilterButton != null && this.modFilterButton.visible && this.modFilterButton.isMouseOver(mouseX, mouseY)) {
-            Component tip = this.modFilterButton.getHint();
-            if (tip != null && tip != CommonComponents.EMPTY) {
-                guiGraphics.renderTooltip(this.font, tip, mouseX, mouseY);
+        for (var widget : this.renderables) {
+            if (widget instanceof InvisibleButton button && button.visible && button.isMouseOver(mouseX, mouseY)) {
+                Component tip = button.getHint();
+                if (tip != null && tip != CommonComponents.EMPTY) {
+                    guiGraphics.renderTooltip(this.font, tip, mouseX, mouseY);
+                }
+                return;
             }
         }
     }

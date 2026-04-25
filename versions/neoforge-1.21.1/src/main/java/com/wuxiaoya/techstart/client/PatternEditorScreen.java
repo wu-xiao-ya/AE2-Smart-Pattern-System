@@ -155,6 +155,7 @@ public class PatternEditorScreen extends AbstractContainerScreen<PatternEditorMe
                 Component.translatable("gui.techstart.open_search"),
                 ignored -> {
                     if (this.minecraft != null) {
+                        this.menu.refreshPatternStackSnapshot();
                         this.minecraft.setScreen(new PatternSearchScreen(this, this.menu));
                     }
                 }
@@ -169,6 +170,7 @@ public class PatternEditorScreen extends AbstractContainerScreen<PatternEditorMe
                 Component.translatable("gui.techstart.open_mod_filter"),
                 ignored -> {
                     if (this.minecraft != null) {
+                        this.menu.refreshPatternStackSnapshot();
                         this.minecraft.setScreen(new ModFilterScreen(this, this.menu));
                     }
                 }

@@ -76,6 +76,7 @@ public class PatternSearchScreen extends Screen {
 
     @Override
     protected void init() {
+        this.menu.refreshPatternStackSnapshot();
         this.leftPos = (this.width - GUI_WIDTH) / 2;
         this.topPos = (this.height - GUI_HEIGHT) / 2;
 
@@ -267,6 +268,7 @@ public class PatternSearchScreen extends Screen {
         } catch (Throwable ignored) {
             this.allEntries.clear();
         }
+
     }
 
     private void applyFilter() {
@@ -388,17 +390,47 @@ public class PatternSearchScreen extends Screen {
     }
 
     private ItemStack getPrimaryPatternStack(ItemStack patternStack, boolean input) {
-        String key = input ? "TechStartInputs" : "TechStartOutputs";
-        if (patternStack.hasTag()) {
-            var tag = patternStack.getTag();
-            if (tag != null && tag.contains(key, 9)) {
-                var list = tag.getList(key, 10);
-                if (!list.isEmpty() && this.minecraft != null && this.minecraft.level != null) {
-                    return ItemStack.of(list.getCompound(0));
+        List<ItemStack> stacks = readStoredStacks(patternStack, input);
+        return stacks.isEmpty() ? ItemStack.EMPTY : stacks.get(0).copy();
+    }
+
+    private List<ItemStack> readStoredStacks(ItemStack patternStack, boolean input) {
+        List<ItemStack> stacks = new ArrayList<>();
+        if (patternStack.isEmpty()) {
+            return stacks;
+        }
+        var tag = patternStack.getTag();
+        if (tag == null) {
+            return stacks;
+        }
+
+        String virtualKey = input ? "VirtualInputStacks" : "VirtualOutputStacks";
+        if (tag.contains(virtualKey, 9)) {
+            var list = tag.getList(virtualKey, 10);
+            for (int index = 0; index < list.size(); index++) {
+                ItemStack stack = ItemStack.of(list.getCompound(index));
+                if (!stack.isEmpty()) {
+                    stacks.add(stack);
+                }
+            }
+            return stacks;
+        }
+
+        String modernKey = input ? "TechStartInputs" : "TechStartOutputs";
+        if (tag.contains(modernKey, 9)) {
+            var list = tag.getList(modernKey, 10);
+            for (int index = 0; index < list.size(); index++) {
+                var entry = list.getCompound(index);
+                if (!entry.contains("Stack", 10)) {
+                    continue;
+                }
+                ItemStack stack = ItemStack.of(entry.getCompound("Stack"));
+                if (!stack.isEmpty()) {
+                    stacks.add(stack);
                 }
             }
         }
-        return ItemStack.EMPTY;
+        return stacks;
     }
 
     private String getFilterEntryId(ItemStack patternStack, ItemStack input, ItemStack output) {

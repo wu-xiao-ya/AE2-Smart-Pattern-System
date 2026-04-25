@@ -76,6 +76,7 @@ public class ModFilterScreen extends Screen {
 
     @Override
     protected void init() {
+        this.menu.refreshPatternStackSnapshot();
         this.leftPos = (this.width - GUI_WIDTH) / 2;
         this.topPos = (this.height - GUI_HEIGHT) / 2;
 

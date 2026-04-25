@@ -75,6 +75,7 @@ public class PatternSearchScreen extends Screen {
 
     @Override
     protected void init() {
+        this.menu.refreshPatternStackSnapshot();
         this.leftPos = (this.width - GUI_WIDTH) / 2;
         this.topPos = (this.height - GUI_HEIGHT) / 2;
 
@@ -265,6 +266,43 @@ public class PatternSearchScreen extends Screen {
             }
         } catch (Throwable ignored) {
             this.allEntries.clear();
+        }
+
+        if (!this.allEntries.isEmpty()) {
+            return;
+        }
+
+        List<ItemStack> inputs = new ArrayList<>();
+        List<ItemStack> outputs = new ArrayList<>();
+        for (int slotIndex = 0; slotIndex < 9 && slotIndex < this.menu.slots.size(); slotIndex++) {
+            ItemStack stack = this.menu.slots.get(slotIndex).getItem();
+            if (!stack.isEmpty()) {
+                inputs.add(stack.copy());
+            }
+        }
+        for (int slotIndex = 9; slotIndex < 18 && slotIndex < this.menu.slots.size(); slotIndex++) {
+            ItemStack stack = this.menu.slots.get(slotIndex).getItem();
+            if (!stack.isEmpty()) {
+                outputs.add(stack.copy());
+            }
+        }
+        if (inputs.isEmpty() || outputs.isEmpty()) {
+            return;
+        }
+        Set<String> fallbackIds = new LinkedHashSet<>();
+        for (ItemStack input : inputs) {
+            for (ItemStack output : outputs) {
+                String id = PatternEditorMenu.buildFilterEntryId(input, output);
+                if (!fallbackIds.add(id)) {
+                    continue;
+                }
+                this.allEntries.add(new SearchEntry(
+                        id,
+                        input.getHoverName().getString(),
+                        output.getHoverName().getString(),
+                        input.getHoverName().getString() + " -> " + output.getHoverName().getString()
+                ));
+            }
         }
     }
 
