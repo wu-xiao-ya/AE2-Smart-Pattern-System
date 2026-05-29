@@ -12,7 +12,7 @@ import io.netty.buffer.ByteBuf;
 import java.io.IOException;
 
 /**
- * Simple implementation of IAEItemStack for AE2UEL compatibility
+ * Simple implementation of IAEItemStack for the legacy 1.12.2 AE2SPS stack bridge.
  */
 public class SimpleAEItemStack implements IAEItemStack {
 
@@ -234,4 +234,3 @@ public class SimpleAEItemStack implements IAEItemStack {
         return stackSize <= 0 && countRequestable <= 0;
     }
 }
-

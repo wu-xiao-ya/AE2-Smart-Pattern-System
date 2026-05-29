@@ -62,8 +62,8 @@ build-dev.bat -PenableAe2Runtime=true runClient --console=plain
 - Added JEI ghost ingredient support for `PatternEditorScreen` (drag ingredient into pattern slots).
 - Added server sync packet for marker placement to keep client/server slots consistent.
 - Kept `sampleintegration` as the runtime-compatible `modid` and resource namespace while migrating the codebase and branding to AE2 Smart Pattern System.
-- Added runtime filter application in `TechStartPatternDetails` decode path (whitelist/blacklist now affects decoded inputs/outputs).
-- Added item-marker decode cleanup so `TechStartItemMarker` tags are stripped before creating AE2 item keys.
+- Added runtime filter application in the AE2SPS pattern decode path (whitelist/blacklist now affects decoded inputs/outputs).
+- Added item-marker decode cleanup so legacy `TechStartItemMarker` tags are stripped before creating AE2 item keys.
 - Added offhand/main inventory sync reinforcement after saving pattern NBT in editor menu.
 - Added `run-dev-safe.bat` to automate temporary runtime-jar disable/restore for dev launch stability.
 
@@ -73,5 +73,5 @@ build-dev.bat -PenableAe2Runtime=true runClient --console=plain
   Dependency coordinates/repository follow AE2 official documentation.
 - 当前接入版本：`appeng:appliedenergistics2-forge:15.4.10`（软依赖）。  
   Current integrated version: `appeng:appliedenergistics2-forge:15.4.10` (soft dependency).
-- 已实现 `IPatternDetailsDecoder` + `IPatternDetails`，让 Pattern Provider 可识别 TechStart 样板。  
-  Implemented `IPatternDetailsDecoder` + `IPatternDetails` so Pattern Provider can decode TechStart patterns.
+- 已实现 `IPatternDetailsDecoder` + `IPatternDetails`，让 Pattern Provider 可识别 AE2SPS 样板。  
+  Implemented `IPatternDetailsDecoder` + `IPatternDetails` so Pattern Provider can decode AE2SPS patterns.

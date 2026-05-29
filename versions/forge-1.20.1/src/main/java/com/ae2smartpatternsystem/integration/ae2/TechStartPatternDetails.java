@@ -25,7 +25,7 @@ import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Lightweight processing-pattern details decoded from TechStart encoded pattern items.
+ * Lightweight processing-pattern details decoded from AE2SPS encoded pattern items.
  */
 public final class TechStartPatternDetails implements IPatternDetails {
     private static final String TAG_INPUTS = "TechStartInputs";
@@ -505,4 +505,3 @@ public final class TechStartPatternDetails implements IPatternDetails {
         }
     }
 }
-

@@ -13,7 +13,7 @@
 
 | 旧版 1.12.2 | 作用 | 1.20.1 对应现状 | 结论 |
 |---|---|---|---|
-| `TechStart` | 模组入口、注册、GUI handler、命令 | `TechStartForge` 已建立现代入口 | 已部分迁移 |
+| `TechStart` | 旧版模组入口、注册、GUI handler、命令 | `TechStartForge` 已建立现代入口 | 已部分迁移 |
 | `ItemTest` | 智能样板物品、NBT 编码、tooltip、AE2 `ICraftingPatternItem` | `PatternIntegrationsItem` 已实现现代物品和 tooltip | 已部分迁移 |
 | `BlockPatternExpander` | 样板扩展器方块 | `PatternExpanderBlock` | 已迁移基础壳 |
 | `TileEntityPatternExpander` | AE2 crafting provider、扫描、样板提供 | `PatternExpanderBlockEntity` 目前只做菜单容器/物品能力 | 核心缺失 |
