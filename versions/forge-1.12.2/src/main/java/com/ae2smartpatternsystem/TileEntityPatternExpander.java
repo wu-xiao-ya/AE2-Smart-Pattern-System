@@ -10,6 +10,6 @@ public class TileEntityPatternExpander extends TileEntity implements ITickable {
     }
 
     public void onBlockDestroyed() {
-        // No-op after removing the legacy AE2UEL provider implementation.
+        // No-op after removing the legacy 1.12.2 provider implementation.
     }
 }

@@ -8,6 +8,7 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 /**
+ * Inserts the wildcard expansion interceptor into AE2's legacy DualityInterface path.
  */
 public class DualityInterfaceTransformer implements IClassTransformer {
     
@@ -36,14 +37,13 @@ public class DualityInterfaceTransformer implements IClassTransformer {
             return classWriter.toByteArray();
             
         } catch (Exception e) {
-            System.err.println("[DualityInterfaceTransformer] 閺夌儐鍓氬畷鍙夊緞鏉堫偉袝: " + e.getMessage());
+            System.err.println("[DualityInterfaceTransformer] Failed to transform DualityInterface: " + e.getMessage());
             e.printStackTrace();
             return basicClass;
         }
     }
     
     /**
-     * 
      * if (PatternInterceptor.interceptAndExpand(this, stack)) {
      *     return;
      * }
@@ -76,4 +76,3 @@ public class DualityInterfaceTransformer implements IClassTransformer {
         method.instructions.insert(insnList);
     }
 }
-

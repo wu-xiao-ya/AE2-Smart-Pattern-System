@@ -32,7 +32,7 @@ public class TechStart {
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         INSTANCE = this;
-        LOGGER.info("Hello From {}!", NAME);
+        LOGGER.info("Starting {}.", NAME);
         ITEM_TEST = new ItemTest();
         GUI_HANDLER = new GuiHandler();
         PATTERN_EXPANDER = null;
@@ -72,7 +72,7 @@ public class TechStart {
     @Mod.EventHandler
     public void postInit(FMLPostInitializationEvent event) {
         if (AE2S_PATTERN_API) {
-            LOGGER.info("AE2S pattern API detected in postInit, enabling AE2S decoder + pattern provider integration.");
+            LOGGER.info("AE2S pattern API detected in postInit, enabling AE2SPS decoder and pattern provider integration.");
             Ae2Compat.init();
         } else {
             LOGGER.warn("AE2S pattern API not detected in postInit.");

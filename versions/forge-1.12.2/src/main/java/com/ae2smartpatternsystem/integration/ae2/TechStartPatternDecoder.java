@@ -37,7 +37,7 @@ public final class TechStartPatternDecoder implements IPatternDetailsDecoder {
         boolean encoded = isEncodedTag(stack.getTagCompound());
         if (encoded) {
             TechStart.LOGGER.info(
-                "AE2S decoder accepted pattern stack: {}, inputs={}, outputs={}",
+                "AE2SPS decoder accepted pattern stack: {}, inputs={}, outputs={}",
                 stack,
                 ItemTest.getInputOreNamesStatic(stack),
                 ItemTest.getOutputOreNamesStatic(stack)
@@ -58,7 +58,7 @@ public final class TechStartPatternDecoder implements IPatternDetailsDecoder {
         try {
             return new TechStartPatternDetails(what, stack.copy());
         } catch (IllegalArgumentException ignored) {
-            TechStart.LOGGER.warn("AE2S decoder rejected encoded pattern key due to invalid IO payload: {}", stack);
+            TechStart.LOGGER.warn("AE2SPS decoder rejected encoded pattern key due to invalid IO payload: {}", stack);
             return null;
         }
     }
@@ -75,7 +75,7 @@ public final class TechStartPatternDecoder implements IPatternDetailsDecoder {
         try {
             return new TechStartPatternDetails(key, what.copy());
         } catch (IllegalArgumentException ignored) {
-            TechStart.LOGGER.warn("AE2S decoder rejected encoded pattern stack due to invalid IO payload: {}", what);
+            TechStart.LOGGER.warn("AE2SPS decoder rejected encoded pattern stack due to invalid IO payload: {}", what);
             return null;
         }
     }

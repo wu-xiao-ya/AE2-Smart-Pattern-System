@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ * Lightweight wrapper that exposes wildcard expansions through a single AE2 pattern entry.
  */
 public class WildcardPatternWrapper implements ICraftingPatternDetails {
     
@@ -137,4 +137,3 @@ public class WildcardPatternWrapper implements ICraftingPatternDetails {
         primaryPattern.setPriority(priority);
     }
 }
-

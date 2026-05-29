@@ -15,6 +15,6 @@ public final class Ae2Compat {
         }
         initialized = true;
         PatternDetailsHelper.registerDecoder(new TechStartPatternDecoder());
-        TechStart.LOGGER.info("AE2S compat initialized: registered AE2S pattern decoder.");
+        TechStart.LOGGER.info("AE2SPS compat initialized: registered AE2SPS pattern decoder.");
     }
 }
