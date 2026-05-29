@@ -5,8 +5,8 @@
 ## 当前结论
 
 - 根项目 `src/main` 仍是稳定的 `1.12.2` 基线。
-- `migration/forge-1.20.1` 已具备可编译骨架，并已实现基础内容注册、菜单、界面、网络、AE2 解码器接入。
-- `migration/neoforge-1.21.1` 目前仍处于规划阶段，尚未开始代码级迁移。
+- `versions/forge-1.20.1` 已具备可编译骨架，并已实现基础内容注册、菜单、界面、网络、AE2 解码器接入。
+- `versions/neoforge-1.21.1` 已进入代码迁移阶段，但仍未完成功能对齐与验证。
 - 当前最大缺口不是“能不能编译”，而是“旧版智能通配样板的核心玩法是否已在现代版本复现”。答案是：还没有完全复现。
 
 ## 模块映射总览
@@ -37,7 +37,7 @@
 - AE2 现代 API 已接入 `PatternDetailsHelper.registerDecoder(...)`。
 - 样板物品 tooltip、过滤模式、输入/输出列表、流体列表已有现代实现。
 - JEI ghost ingredient 处理器已有基本实现。
-- 当前 `migration/forge-1.20.1` 可以编译，说明工程脚手架阶段已经过了。
+- 当前 `versions/forge-1.20.1` 可以编译，说明工程脚手架阶段已经过了。
 
 ## 缺口清单
 
@@ -147,7 +147,7 @@
 目前：
 
 - 旧版 `mod_id = sampleintegration`
-- 1.20.1 `mod_id = techstart`
+- 当前现代版本也继续保留 `mod_id = sampleintegration`，以避免资源路径与既有兼容面再次破坏。
 
 如果你的目标是“新版本延续旧模组”，那要尽快决定：
 
@@ -162,7 +162,7 @@
 
 ### 第一阶段：先抽 `common-core`
 
-建议优先放入 `migration/common-core` 的内容：
+建议优先放入 `versions/shared/common-core` 的内容：
 
 - 样板槽位数据模型；
 - 过滤规则模型；
@@ -203,7 +203,7 @@ NeoForge 轨道应该复用：
 
 ### P0
 
-- [ ] 在 `migration/common-core` 建立真正的 Java 源码目录和构建入口。
+- [x] 在 `versions/shared/common-core` 建立 Java 源码目录和构建入口。
 - [ ] 提取“样板输入/输出/流体/过滤模式”数据模型。
 - [ ] 提取旧版 NBT key 常量与兼容读写策略。
 - [ ] 设计旧版 OreDictionary 规则到现代 tags/映射表的替代方案。

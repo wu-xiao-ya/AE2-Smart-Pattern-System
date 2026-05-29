@@ -1,5 +1,5 @@
 {
-	"package": "com.lwx1145.sampleintegration.mixin",
+	"package": "com.ae2smartpatternsystem.mixin",
 	"required": true,
 	"refmap": "${mixin_refmap}",
 	"target": "@env(DEFAULT)",

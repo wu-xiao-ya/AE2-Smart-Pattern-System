@@ -61,7 +61,7 @@ build-dev.bat -PenableAe2Runtime=true runClient --console=plain
 
 - Added JEI ghost ingredient support for `PatternEditorScreen` (drag ingredient into pattern slots).
 - Added server sync packet for marker placement to keep client/server slots consistent.
-- Migrated `modid` and resource namespace from `sampleintegration` to `techstart`.
+- Kept `sampleintegration` as the runtime-compatible `modid` and resource namespace while migrating the codebase and branding to AE2 Smart Pattern System.
 - Added runtime filter application in `TechStartPatternDetails` decode path (whitelist/blacklist now affects decoded inputs/outputs).
 - Added item-marker decode cleanup so `TechStartItemMarker` tags are stripped before creating AE2 item keys.
 - Added offhand/main inventory sync reinforcement after saving pattern NBT in editor menu.

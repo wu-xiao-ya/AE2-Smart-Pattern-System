@@ -22,11 +22,11 @@
 
 ## Package Layout
 
-- `com.wuxiaoya.techstart.core.model`
-- `com.wuxiaoya.techstart.core.codec`
-- `com.wuxiaoya.techstart.core.codec.tag`
-- `com.wuxiaoya.techstart.core.service`
-- `com.wuxiaoya.techstart.core.validation`
+- `com.ae2smartpatternsystem.core.model`
+- `com.ae2smartpatternsystem.core.codec`
+- `com.ae2smartpatternsystem.core.codec.tag`
+- `com.ae2smartpatternsystem.core.service`
+- `com.ae2smartpatternsystem.core.validation`
 
 ## Current Bootstrap
 

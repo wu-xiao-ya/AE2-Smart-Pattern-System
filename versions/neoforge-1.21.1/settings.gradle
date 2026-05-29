@@ -10,4 +10,4 @@ plugins {
     id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
 }
 
-rootProject.name = 'techstart-neoforge-1.21.1-fresh'
+rootProject.name = 'ae2sps-neoforge-1.21.1'

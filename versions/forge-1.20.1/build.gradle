@@ -35,7 +35,7 @@ def commonManifestAttributes = {
             'Implementation-Title'   : project.name,
             'Implementation-Version' : project.version,
             'Implementation-Vendor'  : mod_authors,
-            'MixinConfigs'           : 'techstart.mixins.json'
+            'MixinConfigs'           : 'mixins.sampleintegration.json'
     ]
 }
 

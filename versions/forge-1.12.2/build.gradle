@@ -69,6 +69,18 @@ configurations {
     implementation.extendsFrom(embed)
 }
 
+sourceSets {
+    main {
+        java {
+            exclude 'com/ae2smartpatternsystem/asm/**'
+            exclude 'com/ae2smartpatternsystem/mixin/MixinDualityInterface.java'
+            exclude 'com/ae2smartpatternsystem/PatternInterceptor.java'
+            exclude 'com/ae2smartpatternsystem/WildcardPatternWrapper.java'
+            exclude 'com/ae2smartpatternsystem/SimpleAEItemStack.java'
+        }
+    }
+}
+
 minecraft {
     mcVersion.set('1.12.2')
 
@@ -258,6 +270,20 @@ idea {
 
 compileTestJava {
     sourceCompatibility = targetCompatibility = 8
+}
+
+def java25Compiler = javaToolchains.compilerFor {
+    languageVersion.set(JavaLanguageVersion.of(25))
+}
+
+tasks.named('compileJava', JavaCompile).configure {
+    javaCompiler.set(java25Compiler)
+    sourceCompatibility = targetCompatibility = '25'
+    exclude '**/PatternInterceptor.java'
+    exclude '**/WildcardPatternWrapper.java'
+    exclude '**/SimpleAEItemStack.java'
+    exclude '**/asm/**'
+    exclude '**/mixin/MixinDualityInterface.java'
 }
 
 test {

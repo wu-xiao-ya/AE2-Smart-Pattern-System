@@ -1,29 +1,28 @@
-﻿# AE2UEL 智能样板系统 (Smart Pattern System)
-*AE2 Unofficial Extended Life 智能样板系统 - 基于矿物辞典的通配符合成样板*
+# AE2SPS 智能样板系统 (Smart Pattern System)
+*面向 AE2 1.12.2 分支的智能样板系统 - `1.0.9-beta-AE2S` 预热版*
 
-> 🚀 **v1.0.8 发布！** 详见 [更新日志](CHANGELOG.md)
+> 🚀 **v1.0.9-beta-AE2S 预发布！** 详见 [更新日志](CHANGELOG.md)
 
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.12.2-green.svg)](https://www.minecraft.net/)
 [![Forge](https://img.shields.io/badge/Forge-14.23.5.2847-red.svg)](https://files.minecraftforge.net/)
 [![Java](https://img.shields.io/badge/Java-8+-blue.svg)](https://adoptium.net/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-1.0.8-orange.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-1.0.9--beta--AE2S-orange.svg)](CHANGELOG.md)
 
-一个为 AE2UEL (Applied Energistics 2 Unofficial Extended Life) 设计的智能样板系统，通过矿物辞典实现通配符匹配，让单个样板可以自动匹配整个矿物辞典系列（如所有金属锭→板的转换）。
+一个面向 Applied Energistics 2 Supergiant（AE2S）的智能样板系统，通过矿物辞典实现通配符匹配，让单个样板可以自动匹配整个矿物辞典系列（如所有金属锭→板的转换）。`1.0.9-beta-AE2S` 起按 CRL / Java 25 环境运行，不再以 AE2UEL 作为兼容目标。
 
-## v1.0.8 更新摘要
-- 新增独立搜索界面，支持从搜索结果跳转到黑白名单对应条目。
-- 新增模组筛选界面（输入/输出分离筛选，左键输入、右键输出）。
-- 模组筛选改为“跟随样板物品”保存（按物品 NBT），不再是全局共享。
-- 搜索界面已接入样板模组筛选结果，显示与黑白名单一致。
-- 修复部分配方显示箭头异常字符导致的乱码显示问题。
+## v1.0.9-beta-AE2S 更新摘要
+- 发布 `1.0.9-beta-AE2S` 版本，明确转向 AE2S-only 的 1.12.2 运行路线。
+- 统一 1.12.2 构建元数据、游戏内版本号与发布类型为 beta。
+- 将项目命名收敛为 `AE2SPS Smart Pattern System`，不再保留 AE2UEL 兼容口径。
+- 以 CRL / Java 25 为默认开发与运行环境。
 
 ## ✨ 核心特性
 
 ### 🎯 智能样板扩展
 - **矿物辞典通配符**: 利用 Forge 矿物辞典系统，支持 `ingot*`、`plate*` 等通配符模式
 - **自动批量生成**: 一个样板可自动扩展为多个具体配方（如 `ingot*→plate*` 根据矿物辞典自动识别所有已注册的金属配方）
-- **AE2UEL 完全兼容**: 实现 `ICraftingPatternItem` 接口，无缝集成 AE2 ME 接口
+- **AE2 1.12.2 分支兼容设计**: 实现 `ICraftingPatternItem` 接口，无缝集成 AE2 ME 接口
 - **样板扩展器方块**: 专用方块用于编辑和管理智能样板
 
 ## 📦 安装要求
@@ -31,33 +30,34 @@
 ### 必需依赖
 - **Minecraft**: 1.12.2
 - **Minecraft Forge**: 14.23.5.2847+
-- **AE2UEL**: 兼容版本
+- **AE2S**: `1.0.9-beta-AE2S`
+- **运行环境**: Cleanroom Loader (CRL) + Java 25
 
 ## 🚀 快速开始
 
 ### 安装步骤
 1. 安装 Minecraft 1.12.2 和 Forge 14.23.5.2847+
-2. 下载并安装 AE2UEL 兼容版本
+2. 下载并安装 AE2S 与 CRL 对应的 1.12.2 运行环境
 3. 将本模组 jar 文件放入 `mods` 文件夹
 4. 启动游戏
 
 ### 基本使用流程
 
 #### 1. 获取物品
-```
+```text
 /give @s sampleintegration:pattern_integrations    # 智能样板物品
 /give @s sampleintegration:pattern_expander        # 样板扩展器方块
 ```
 
 #### 2. 编辑样板
-1. **放置样板扩展器方块**在AE中
+1. **放置样板扩展器方块**在 AE 网络环境中
 2. **手持智能样板物品**，右键点击方块打开编辑界面
 3. **拖拽输入物品**到左侧输入槽（例如：铁锭）
 4. **拖拽输出物品**到右侧输出槽（例如：铁板）
 5. **调整数量**: 中键即可设置数量
 
 #### 3. 使用样板
-1. 将编码好的智能样板插入 **AE2 ME 接口 等等**
+1. 将编码好的智能样板插入 **AE2 ME 接口** 等设备
 2. ME 系统会根据矿物辞典自动识别并扩展样板为多个具体配方（数量取决于已安装的模组）
 
 #### 4. 清除样板
@@ -75,14 +75,13 @@
 - `rod*` → 所有杆/棒
 - `wire*` → 所有线缆
 - `dust*` → 所有粉末
-- 也可通过config中的配置文件添加
-
+- 也可通过 config 配置文件添加
 
 ### 样板扩展示例
 **输入**: `ingotCopper` (铜锭) → **输出**: `plateCopper` (铜板)
 
-系统根据矿物辞典自动扩展配方（通常19+种）：
-```
+系统根据矿物辞典自动扩展配方（通常 19+ 种）：
+```text
 铁锭 → 铁板
 铜锭 → 铜板
 金锭 → 金板
@@ -104,7 +103,7 @@
 
 ## 🙏 致谢
 
-- **AE2UEL 团队**: 提供优秀的 AE2 扩展版本
+- **AE2S 团队**: 为即将到来的 Applied Energistics 2 Supergiant 提供方向
 - **Minecraft Forge 社区**: 强大的模组开发框架
 - **CleanroomMC**: RetroFuturaGradle 构建系统
 - **矿物辞典系统**: Forge 统一物品标签系统
@@ -114,7 +113,6 @@
 - **问题反馈**: 在 GitHub 提交 Issue
 - **功能建议**: 在 GitHub 提交 Feature Request
 
-**版本**: v1.0.8 | **Minecraft**: 1.12.2 | **Forge**: 14.23.5.2847+ | **AE2UEL**: 兼容版本
+**版本**: v1.0.9-beta-AE2S | **Minecraft**: 1.12.2 | **Forge**: 14.23.5.2847+ | **运行环境**: CRL + Java 25 | **AE2S**: 定向支持
 
 *基于 CleanroomMC 的 RetroFuturaGradle 构建* | *完全开源，MIT 许可*
-

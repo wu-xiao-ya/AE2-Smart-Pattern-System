@@ -6,5 +6,5 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'techstart-forge-1.20.1'
+rootProject.name = 'ae2sps-forge-1.20.1'
 

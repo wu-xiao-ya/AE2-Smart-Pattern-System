@@ -2,7 +2,7 @@ plugins {
     id 'java-library'
 }
 
-group = 'com.wuxiaoya.techstart'
+group = 'com.ae2smartpatternsystem'
 version = '0.1.0-SNAPSHOT'
 
 java {

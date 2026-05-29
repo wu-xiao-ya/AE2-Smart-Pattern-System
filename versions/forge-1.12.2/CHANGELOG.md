@@ -4,6 +4,13 @@
 
 ---
 
+## [1.0.9-beta-AE2S] - 2026-05-23
+
+- Prepared the `1.0.9-beta-AE2S` beta release line for the 1.12.2 track.
+- Renamed the public-facing 1.12.2 package identity to `AE2SPS Smart Pattern System`.
+- Updated release metadata, in-game version strings, and README messaging for the AE2S warm-up release.
+- Switched the 1.12.2 line to an AE2S-only runtime direction on top of the CRL / Java 25 stack.
+
 ## [1.0.8] - 2026-04-25
 
 - Prepared the `1.0.8` release metadata and repository links.

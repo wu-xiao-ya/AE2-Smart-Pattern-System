@@ -8,7 +8,7 @@ It adds wildcard recipe expansion, item or fluid or gas marker support, recipe s
 
 | Track | Loader | Status | Release |
 | --- | --- | --- | --- |
-| `forge-1.12.2` | Forge | Active | `1.0.8` |
+| `forge-1.12.2` | Forge | Active beta warm-up | `1.0.9-beta-AE2S` |
 | `forge-1.20.1` | Forge | Active migration line | `1.0.8` |
 | `neoforge-1.21.1` | NeoForge | Active migration line | `1.0.8` |
 

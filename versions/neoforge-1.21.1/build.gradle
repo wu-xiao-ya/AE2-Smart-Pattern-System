@@ -50,7 +50,7 @@ tasks.withType(Jar).configureEach {
 
 def commonManifestAttributes = {
     [
-            'MixinConfigs': 'techstart.mixins.json'
+            'MixinConfigs': 'mixins.sampleintegration.json'
     ]
 }
 

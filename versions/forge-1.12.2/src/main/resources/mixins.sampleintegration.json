@@ -1,10 +1,10 @@
 {
 	"required": true,
 	"minVersion": "0.8",
-	"package": "com.lwx1145.sampleintegration.mixin",
+	"package": "com.ae2smartpatternsystem.mixin",
 	"refmap": "mixins.sampleintegration.refmap.json",
 	"mixins": [
-		"MixinDualityInterface",
+		"ae2.PatternProviderLogicMixin",
 		"defensive_mixin.MixinRegistryManager"
 	],
 	"client": [],
@@ -13,5 +13,4 @@
 		"defaultRequire": 1
 	}
 }
-
 
