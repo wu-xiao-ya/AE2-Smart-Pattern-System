@@ -122,11 +122,11 @@ public class PatternInterceptor {
             return null;
         }
         NBTTagCompound copy = original.copy();
-        copy.removeTag("VirtualInputOreNames");
-        copy.removeTag("VirtualInputOreName");
-        copy.removeTag("VirtualOutputOreNames");
-        copy.removeTag("VirtualOutputOreName");
-        copy.removeTag("VirtualDisplayName");
+        copy.removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORES);
+        copy.removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORE_NAME);
+        copy.removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORES);
+        copy.removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORE_NAME);
+        copy.removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_DISPLAY_NAME);
         copy.removeTag("VirtualInputStacks");
         copy.removeTag("VirtualOutputStacks");
         copy.removeTag("VirtualFilterEntryId");
@@ -657,4 +657,3 @@ public class PatternInterceptor {
         }
     }
 }
-

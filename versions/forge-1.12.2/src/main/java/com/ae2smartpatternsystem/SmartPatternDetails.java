@@ -71,7 +71,8 @@ public class SmartPatternDetails {
         this.outputCount = ItemTest.getOutputCountStatic(patternStack);
         NBTTagCompound tag = patternStack.hasTagCompound() ? patternStack.getTagCompound() : null;
         this.isVirtual = tag != null &&
-            (tag.hasKey("VirtualInputOreNames") || tag.hasKey("VirtualInputOreName"));
+            (tag.hasKey(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORES)
+                || tag.hasKey(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORE_NAME));
         this.virtualInputStacks = readItemStackList(tag, TAG_VIRTUAL_INPUT_STACKS);
         this.virtualOutputStacks = readItemStackList(tag, TAG_VIRTUAL_OUTPUT_STACKS);
         this.virtualFilterEntryId = tag != null && tag.hasKey(TAG_VIRTUAL_FILTER_ENTRY_ID)
@@ -618,9 +619,9 @@ public class SmartPatternDetails {
         ItemStack virtualStack = patternStack.copy();
         NBTTagCompound tag = virtualStack.hasTagCompound() ? virtualStack.getTagCompound().copy() : new NBTTagCompound();
 
-        tag.setTag("VirtualInputOreNames", writeStringList(specificInputs));
-        tag.setTag("VirtualOutputOreNames", writeStringList(specificOutputs));
-        tag.setString("VirtualDisplayName", virtualDisplayName == null ? "" : virtualDisplayName);
+        tag.setTag(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORES, writeStringList(specificInputs));
+        tag.setTag(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORES, writeStringList(specificOutputs));
+        tag.setString(LegacyPatternNbtKeys.TAG_VIRTUAL_DISPLAY_NAME, virtualDisplayName == null ? "" : virtualDisplayName);
         if (filterEntryId != null && !filterEntryId.isEmpty()) {
             tag.setString(TAG_VIRTUAL_FILTER_ENTRY_ID, filterEntryId);
         } else {
@@ -956,4 +957,3 @@ public class SmartPatternDetails {
         return descriptions;
     }
 }
-
