@@ -202,17 +202,17 @@ public class ItemTest extends Item {
         nbt.setTag(TAG_OUTPUT_COUNTS, outputCountList);
 
         if (!inputOreNames.isEmpty()) {
-            nbt.setString("InputOreName", inputOreNames.get(0));
+            nbt.setString(LegacyPatternNbtKeys.TAG_INPUT_ORE_NAME, inputOreNames.get(0));
             nbt.setInteger("InputCount", inputCounts.isEmpty() ? 1 : inputCounts.get(0));
         } else {
-            nbt.removeTag("InputOreName");
+            nbt.removeTag(LegacyPatternNbtKeys.TAG_INPUT_ORE_NAME);
             nbt.removeTag("InputCount");
         }
         if (!outputOreNames.isEmpty()) {
-            nbt.setString("OutputOreName", outputOreNames.get(0));
+            nbt.setString(LegacyPatternNbtKeys.TAG_OUTPUT_ORE_NAME, outputOreNames.get(0));
             nbt.setInteger("OutputCount", outputCounts.isEmpty() ? 1 : outputCounts.get(0));
         } else {
-            nbt.removeTag("OutputOreName");
+            nbt.removeTag(LegacyPatternNbtKeys.TAG_OUTPUT_ORE_NAME);
             nbt.removeTag("OutputCount");
         }
     }
@@ -231,9 +231,9 @@ public class ItemTest extends Item {
             stack.getTagCompound().removeTag(TAG_INPUTS);
             stack.getTagCompound().removeTag(TAG_OUTPUTS);
             stack.getTagCompound().removeTag(LegacyPatternNbtKeys.TAG_ENCODED_ITEM);
-            stack.getTagCompound().removeTag("OreName");
-            stack.getTagCompound().removeTag("InputOreName");
-            stack.getTagCompound().removeTag("OutputOreName");
+            stack.getTagCompound().removeTag(LegacyPatternNbtKeys.TAG_ORE_NAME);
+            stack.getTagCompound().removeTag(LegacyPatternNbtKeys.TAG_INPUT_ORE_NAME);
+            stack.getTagCompound().removeTag(LegacyPatternNbtKeys.TAG_OUTPUT_ORE_NAME);
             stack.getTagCompound().removeTag("InputCount");
             stack.getTagCompound().removeTag("OutputCount");
             stack.getTagCompound().removeTag(TAG_INPUT_ORES);
@@ -254,13 +254,13 @@ public class ItemTest extends Item {
             stack.getTagCompound().removeTag(TAG_FILTER_ENTRIES);
             stack.getTagCompound().removeTag(TAG_EXCLUDED_INPUT_MOD_IDS);
             stack.getTagCompound().removeTag(TAG_EXCLUDED_OUTPUT_MOD_IDS);
-            stack.getTagCompound().removeTag("VirtualInputOreName");
-            stack.getTagCompound().removeTag("VirtualOutputOreName");
-            stack.getTagCompound().removeTag("VirtualInputOreNames");
-            stack.getTagCompound().removeTag("VirtualOutputOreNames");
+            stack.getTagCompound().removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORE_NAME);
+            stack.getTagCompound().removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORE_NAME);
+            stack.getTagCompound().removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORES);
+            stack.getTagCompound().removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORES);
             stack.getTagCompound().removeTag("VirtualInputStacks");
             stack.getTagCompound().removeTag("VirtualOutputStacks");
-            stack.getTagCompound().removeTag("VirtualDisplayName");
+            stack.getTagCompound().removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_DISPLAY_NAME);
             stack.getTagCompound().removeTag("VirtualFilterEntryId");
             stack.getTagCompound().removeTag("EditorInputSlots");
             stack.getTagCompound().removeTag("EditorOutputSlots");
@@ -670,17 +670,17 @@ public class ItemTest extends Item {
 
 
         if (!inputOreNames.isEmpty()) {
-            nbt.setString("InputOreName", inputOreNames.get(0));
+            nbt.setString(LegacyPatternNbtKeys.TAG_INPUT_ORE_NAME, inputOreNames.get(0));
             nbt.setInteger("InputCount", inputCounts.isEmpty() ? 1 : inputCounts.get(0));
         } else {
-            nbt.removeTag("InputOreName");
+            nbt.removeTag(LegacyPatternNbtKeys.TAG_INPUT_ORE_NAME);
             nbt.removeTag("InputCount");
         }
         if (!outputOreNames.isEmpty()) {
-            nbt.setString("OutputOreName", outputOreNames.get(0));
+            nbt.setString(LegacyPatternNbtKeys.TAG_OUTPUT_ORE_NAME, outputOreNames.get(0));
             nbt.setInteger("OutputCount", outputCounts.isEmpty() ? 1 : outputCounts.get(0));
         } else {
-            nbt.removeTag("OutputOreName");
+            nbt.removeTag(LegacyPatternNbtKeys.TAG_OUTPUT_ORE_NAME);
             nbt.removeTag("OutputCount");
         }
     }
@@ -689,13 +689,13 @@ public class ItemTest extends Item {
         if (nbt == null) {
             return;
         }
-        nbt.removeTag("VirtualInputOreName");
-        nbt.removeTag("VirtualOutputOreName");
-        nbt.removeTag("VirtualInputOreNames");
-        nbt.removeTag("VirtualOutputOreNames");
+        nbt.removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORE_NAME);
+        nbt.removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORE_NAME);
+        nbt.removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORES);
+        nbt.removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORES);
         nbt.removeTag("VirtualInputStacks");
         nbt.removeTag("VirtualOutputStacks");
-        nbt.removeTag("VirtualDisplayName");
+        nbt.removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_DISPLAY_NAME);
         nbt.removeTag("VirtualFilterEntryId");
     }
 
@@ -792,12 +792,12 @@ public class ItemTest extends Item {
 
     public List<String> getInputOreNames(ItemStack stack) {
         if (!hasEncodedItem(stack) || !stack.hasTagCompound()) return new ArrayList<>();
-        return readStringList(stack.getTagCompound(), TAG_INPUT_ORES, "InputOreName");
+        return readStringList(stack.getTagCompound(), TAG_INPUT_ORES, LegacyPatternNbtKeys.TAG_INPUT_ORE_NAME);
     }
 
     public List<String> getOutputOreNames(ItemStack stack) {
         if (!hasEncodedItem(stack) || !stack.hasTagCompound()) return new ArrayList<>();
-        return readStringList(stack.getTagCompound(), TAG_OUTPUT_ORES, "OutputOreName");
+        return readStringList(stack.getTagCompound(), TAG_OUTPUT_ORES, LegacyPatternNbtKeys.TAG_OUTPUT_ORE_NAME);
     }
 
     public List<Integer> getInputCounts(ItemStack stack) {
@@ -817,13 +817,13 @@ public class ItemTest extends Item {
         if (!stack.hasTagCompound()) return "";
 
 
-        String inputOreName = stack.getTagCompound().getString("InputOreName");
+        String inputOreName = stack.getTagCompound().getString(LegacyPatternNbtKeys.TAG_INPUT_ORE_NAME);
         if (!inputOreName.isEmpty()) {
-            String outputOreName = stack.getTagCompound().getString("OutputOreName");
+            String outputOreName = stack.getTagCompound().getString(LegacyPatternNbtKeys.TAG_OUTPUT_ORE_NAME);
             return inputOreName + " -> " + outputOreName;
         }
 
-        return stack.getTagCompound().getString("OreName");
+        return stack.getTagCompound().getString(LegacyPatternNbtKeys.TAG_ORE_NAME);
     }
 
     /**
@@ -1102,19 +1102,20 @@ public class ItemTest extends Item {
     public static String getOreNameStatic(ItemStack stack) {
         if (!hasEncodedItemStatic(stack)) return "";
         if (!stack.hasTagCompound()) return "";
-        if (stack.getTagCompound().hasKey("VirtualInputOreName") && stack.getTagCompound().hasKey("VirtualOutputOreName")) {
-            String inputOreName = stack.getTagCompound().getString("VirtualInputOreName");
-            String outputOreName = stack.getTagCompound().getString("VirtualOutputOreName");
+        if (stack.getTagCompound().hasKey(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORE_NAME)
+            && stack.getTagCompound().hasKey(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORE_NAME)) {
+            String inputOreName = stack.getTagCompound().getString(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORE_NAME);
+            String outputOreName = stack.getTagCompound().getString(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORE_NAME);
             return inputOreName + " -> " + outputOreName;
         }
 
-        String inputOreName = stack.getTagCompound().getString("InputOreName");
+        String inputOreName = stack.getTagCompound().getString(LegacyPatternNbtKeys.TAG_INPUT_ORE_NAME);
         if (!inputOreName.isEmpty()) {
-            String outputOreName = stack.getTagCompound().getString("OutputOreName");
+            String outputOreName = stack.getTagCompound().getString(LegacyPatternNbtKeys.TAG_OUTPUT_ORE_NAME);
             return inputOreName + " -> " + outputOreName;
         }
 
-        return stack.getTagCompound().getString("OreName");
+        return stack.getTagCompound().getString(LegacyPatternNbtKeys.TAG_ORE_NAME);
     }
 
     /**
@@ -1122,11 +1123,11 @@ public class ItemTest extends Item {
     public static String getEncodedItemNameStatic(ItemStack stack) {
         if (!hasEncodedItemStatic(stack)) return "";
         NBTTagCompound tag = stack.getTagCompound();
-        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("VirtualDisplayName")) {
-            String raw = tag.getString("VirtualDisplayName");
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey(LegacyPatternNbtKeys.TAG_VIRTUAL_DISPLAY_NAME)) {
+            String raw = tag.getString(LegacyPatternNbtKeys.TAG_VIRTUAL_DISPLAY_NAME);
             String normalized = normalizeDisplayName(raw);
             if (!raw.equals(normalized)) {
-                tag.setString("VirtualDisplayName", normalized);
+                tag.setString(LegacyPatternNbtKeys.TAG_VIRTUAL_DISPLAY_NAME, normalized);
             }
             return normalized;
         }
@@ -1162,29 +1163,29 @@ public class ItemTest extends Item {
     public static List<String> getInputOreNamesStatic(ItemStack stack) {
         if (!hasEncodedItemStatic(stack) || !stack.hasTagCompound()) return new ArrayList<>();
         NBTTagCompound tag = stack.getTagCompound();
-        if (tag.hasKey("VirtualInputOreNames")) {
-            return readStringList(tag, "VirtualInputOreNames", "VirtualInputOreName");
+        if (tag.hasKey(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORES)) {
+            return readStringList(tag, LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORES, LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORE_NAME);
         }
-        if (tag.hasKey("VirtualInputOreName")) {
+        if (tag.hasKey(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORE_NAME)) {
             List<String> result = new ArrayList<>();
-            result.add(tag.getString("VirtualInputOreName"));
+            result.add(tag.getString(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORE_NAME));
             return result;
         }
-        return readStringList(tag, TAG_INPUT_ORES, "InputOreName");
+        return readStringList(tag, TAG_INPUT_ORES, LegacyPatternNbtKeys.TAG_INPUT_ORE_NAME);
     }
 
     public static List<String> getOutputOreNamesStatic(ItemStack stack) {
         if (!hasEncodedItemStatic(stack) || !stack.hasTagCompound()) return new ArrayList<>();
         NBTTagCompound tag = stack.getTagCompound();
-        if (tag.hasKey("VirtualOutputOreNames")) {
-            return readStringList(tag, "VirtualOutputOreNames", "VirtualOutputOreName");
+        if (tag.hasKey(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORES)) {
+            return readStringList(tag, LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORES, LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORE_NAME);
         }
-        if (tag.hasKey("VirtualOutputOreName")) {
+        if (tag.hasKey(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORE_NAME)) {
             List<String> result = new ArrayList<>();
-            result.add(tag.getString("VirtualOutputOreName"));
+            result.add(tag.getString(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORE_NAME));
             return result;
         }
-        return readStringList(tag, TAG_OUTPUT_ORES, "OutputOreName");
+        return readStringList(tag, TAG_OUTPUT_ORES, LegacyPatternNbtKeys.TAG_OUTPUT_ORE_NAME);
     }
 
     public static List<Integer> getInputCountsStatic(ItemStack stack) {
@@ -1210,8 +1211,8 @@ public class ItemTest extends Item {
         }
         if (tag.hasKey(fallbackKey)) {
             result.add(tag.getString(fallbackKey));
-        } else if (tag.hasKey("OreName")) {
-            result.add(tag.getString("OreName"));
+        } else if (tag.hasKey(LegacyPatternNbtKeys.TAG_ORE_NAME)) {
+            result.add(tag.getString(LegacyPatternNbtKeys.TAG_ORE_NAME));
         }
         return result;
     }
