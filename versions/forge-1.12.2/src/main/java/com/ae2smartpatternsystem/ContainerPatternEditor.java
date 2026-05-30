@@ -30,14 +30,14 @@ public class ContainerPatternEditor extends Container {
     private static final int TOTAL_PATTERN_SLOTS = INPUT_SLOTS + OUTPUT_SLOTS;
     private static final int DEFAULT_FLUID_AMOUNT = 1000;
     private static final int DEFAULT_GAS_AMOUNT = 1000;
-    private static final String TAG_ITEM_MARKER = "sampleintegrationItemMarker";
-    private static final String TAG_ITEM_AMOUNT = "sampleintegrationItemAmount";
+    private static final String TAG_ITEM_MARKER = LegacyPatternNbtKeys.TAG_ITEM_MARKER;
+    private static final String TAG_ITEM_AMOUNT = LegacyPatternNbtKeys.TAG_ITEM_AMOUNT;
     private static final String TAG_EDITOR_INPUT_SLOTS = "EditorInputSlots";
     private static final String TAG_EDITOR_OUTPUT_SLOTS = "EditorOutputSlots";
     private static final String TAG_EDITOR_SLOT = "Slot";
     private static final String TAG_EDITOR_STACK = "Stack";
-    private static final String TAG_INPUTS = "TechStartInputs";
-    private static final String TAG_OUTPUTS = "TechStartOutputs";
+    private static final String TAG_INPUTS = LegacyPatternNbtKeys.TAG_INPUTS;
+    private static final String TAG_OUTPUTS = LegacyPatternNbtKeys.TAG_OUTPUTS;
 
     private static Method cachedFakeFluidCheck;
     private static Method cachedFakeFluidDisplay;
@@ -619,9 +619,9 @@ public class ContainerPatternEditor extends Container {
         if (stack.isEmpty()) {
             return null;
         }
-        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("sampleintegrationGasName")) {
-            String gasName = stack.getTagCompound().getString("sampleintegrationGasName");
-            int amount = stack.getTagCompound().getInteger("sampleintegrationGasAmount");
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey(LegacyPatternNbtKeys.TAG_GAS_NAME)) {
+            String gasName = stack.getTagCompound().getString(LegacyPatternNbtKeys.TAG_GAS_NAME);
+            int amount = stack.getTagCompound().getInteger(LegacyPatternNbtKeys.TAG_GAS_AMOUNT);
             if (gasName != null && !gasName.isEmpty()) {
                 return new GasInfo(gasName, Math.max(1, amount));
             }
@@ -703,9 +703,9 @@ public class ContainerPatternEditor extends Container {
             marker.setCount(1);
         }
         NBTTagCompound tag = marker.hasTagCompound() ? marker.getTagCompound() : new NBTTagCompound();
-        tag.setBoolean("sampleintegrationGasMarker", true);
-        tag.setString("sampleintegrationGasName", gasInfo.gasName);
-        tag.setInteger("sampleintegrationGasAmount", Math.max(1, gasInfo.amount));
+        tag.setBoolean(LegacyPatternNbtKeys.TAG_GAS_MARKER, true);
+        tag.setString(LegacyPatternNbtKeys.TAG_GAS_NAME, gasInfo.gasName);
+        tag.setInteger(LegacyPatternNbtKeys.TAG_GAS_AMOUNT, Math.max(1, gasInfo.amount));
         marker.setTagCompound(tag);
         return marker;
     }
@@ -724,9 +724,9 @@ public class ContainerPatternEditor extends Container {
         }
         marker.setCount(1);
         NBTTagCompound tag = marker.hasTagCompound() ? marker.getTagCompound() : new NBTTagCompound();
-        tag.setBoolean("sampleintegrationGasMarker", true);
-        tag.setString("sampleintegrationGasName", gasName);
-        tag.setInteger("sampleintegrationGasAmount", resolvedAmount);
+        tag.setBoolean(LegacyPatternNbtKeys.TAG_GAS_MARKER, true);
+        tag.setString(LegacyPatternNbtKeys.TAG_GAS_NAME, gasName);
+        tag.setInteger(LegacyPatternNbtKeys.TAG_GAS_AMOUNT, resolvedAmount);
         marker.setTagCompound(tag);
         return marker;
     }
@@ -780,9 +780,9 @@ public class ContainerPatternEditor extends Container {
             return stack;
         }
         NBTTagCompound tag = stack.getTagCompound();
-        tag.removeTag("sampleintegrationGasMarker");
-        tag.removeTag("sampleintegrationGasName");
-        tag.removeTag("sampleintegrationGasAmount");
+        tag.removeTag(LegacyPatternNbtKeys.TAG_GAS_MARKER);
+        tag.removeTag(LegacyPatternNbtKeys.TAG_GAS_NAME);
+        tag.removeTag(LegacyPatternNbtKeys.TAG_GAS_AMOUNT);
         if (tag.isEmpty()) {
             stack.setTagCompound(null);
         } else {
@@ -829,8 +829,8 @@ public class ContainerPatternEditor extends Container {
     }
 
     private int resolveMarkerAmount(ItemStack stack, int fallback) {
-        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("sampleintegrationFluidAmount")) {
-            int value = stack.getTagCompound().getInteger("sampleintegrationFluidAmount");
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey(LegacyPatternNbtKeys.TAG_FLUID_AMOUNT)) {
+            int value = stack.getTagCompound().getInteger(LegacyPatternNbtKeys.TAG_FLUID_AMOUNT);
             return Math.max(1, value);
         }
         return Math.max(1, fallback);
@@ -1273,7 +1273,7 @@ public class ContainerPatternEditor extends Container {
             return false;
         }
         NBTTagCompound tag = stack.getTagCompound();
-        return tag.getBoolean("sampleintegrationGasMarker") || tag.hasKey("sampleintegrationGasName");
+        return tag.getBoolean(LegacyPatternNbtKeys.TAG_GAS_MARKER) || tag.hasKey(LegacyPatternNbtKeys.TAG_GAS_NAME);
     }
 
     private ItemStack createFluidMarkerStack(String fluidName, int amount) {
@@ -1294,7 +1294,7 @@ public class ContainerPatternEditor extends Container {
             if (result instanceof ItemStack) {
                 ItemStack marker = (ItemStack) result;
                 NBTTagCompound tag = marker.hasTagCompound() ? marker.getTagCompound() : new NBTTagCompound();
-                tag.setInteger("sampleintegrationFluidAmount", Math.max(1, amount));
+                tag.setInteger(LegacyPatternNbtKeys.TAG_FLUID_AMOUNT, Math.max(1, amount));
                 marker.setTagCompound(tag);
                 return marker;
             }

@@ -4,16 +4,17 @@ import appeng.api.crafting.IPatternDetails;
 import appeng.api.crafting.IPatternDetailsDecoder;
 import appeng.api.stacks.AEItemKey;
 import com.ae2smartpatternsystem.ItemTest;
+import com.ae2smartpatternsystem.LegacyPatternNbtKeys;
 import com.ae2smartpatternsystem.TechStart;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 public final class TechStartPatternDecoder implements IPatternDetailsDecoder {
-    private static final String TAG_ENCODED = "TechStartEncoded";
-    private static final String TAG_ENCODED_ITEM = "EncodedItem";
-    private static final String TAG_INPUTS = "TechStartInputs";
-    private static final String TAG_OUTPUTS = "TechStartOutputs";
+    private static final String TAG_ENCODED = LegacyPatternNbtKeys.TAG_ENCODED;
+    private static final String TAG_ENCODED_ITEM = LegacyPatternNbtKeys.TAG_ENCODED_ITEM;
+    private static final String TAG_INPUTS = LegacyPatternNbtKeys.TAG_INPUTS;
+    private static final String TAG_OUTPUTS = LegacyPatternNbtKeys.TAG_OUTPUTS;
     private static final String TAG_INPUT_ORE = "InputOreName";
     private static final String TAG_OUTPUT_ORE = "OutputOreName";
     private static final String TAG_INPUT_ORES = "InputOreNames";

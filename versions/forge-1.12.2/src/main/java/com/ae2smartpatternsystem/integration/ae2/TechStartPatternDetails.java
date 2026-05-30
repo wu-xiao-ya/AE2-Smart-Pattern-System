@@ -5,6 +5,7 @@ import appeng.api.stacks.AEItemKey;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.GenericStack;
 import com.ae2smartpatternsystem.ItemTest;
+import com.ae2smartpatternsystem.LegacyPatternNbtKeys;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -20,8 +21,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public final class TechStartPatternDetails implements IPatternDetails {
-    private static final String TAG_INPUTS = "TechStartInputs";
-    private static final String TAG_OUTPUTS = "TechStartOutputs";
+    private static final String TAG_INPUTS = LegacyPatternNbtKeys.TAG_INPUTS;
+    private static final String TAG_OUTPUTS = LegacyPatternNbtKeys.TAG_OUTPUTS;
     private static final String TAG_VIRTUAL_INPUT_STACKS = "VirtualInputStacks";
     private static final String TAG_VIRTUAL_OUTPUT_STACKS = "VirtualOutputStacks";
     private static final String TAG_VIRTUAL_INPUT_ORES = "VirtualInputOreNames";
@@ -32,8 +33,8 @@ public final class TechStartPatternDetails implements IPatternDetails {
     private static final String TAG_EDITOR_OUTPUT_SLOTS = "EditorOutputSlots";
     private static final String TAG_EDITOR_SLOT = "Slot";
     private static final String TAG_EDITOR_STACK = "Stack";
-    private static final String TAG_ITEM_MARKER = "sampleintegrationItemMarker";
-    private static final String TAG_ITEM_AMOUNT = "sampleintegrationItemAmount";
+    private static final String TAG_ITEM_MARKER = LegacyPatternNbtKeys.TAG_ITEM_MARKER;
+    private static final String TAG_ITEM_AMOUNT = LegacyPatternNbtKeys.TAG_ITEM_AMOUNT;
 
     private final AEItemKey definition;
     private final IInput[] inputs;

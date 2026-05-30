@@ -56,15 +56,15 @@ public class ItemTest extends Item {
     private static final String TAG_FILTER_ENTRIES = "FilterEntries";
     private static final String TAG_EXCLUDED_INPUT_MOD_IDS = "ExcludedInputModIds";
     private static final String TAG_EXCLUDED_OUTPUT_MOD_IDS = "ExcludedOutputModIds";
-    private static final String TAG_ITEM_MARKER = "sampleintegrationItemMarker";
-    private static final String TAG_ITEM_AMOUNT = "sampleintegrationItemAmount";
+    private static final String TAG_ITEM_MARKER = LegacyPatternNbtKeys.TAG_ITEM_MARKER;
+    private static final String TAG_ITEM_AMOUNT = LegacyPatternNbtKeys.TAG_ITEM_AMOUNT;
     private static final String TAG_EDITOR_INPUT_SLOTS = "EditorInputSlots";
     private static final String TAG_EDITOR_OUTPUT_SLOTS = "EditorOutputSlots";
     private static final String TAG_EDITOR_SLOT = "Slot";
     private static final String TAG_EDITOR_STACK = "Stack";
-    private static final String TAG_ENCODED = "TechStartEncoded";
-    private static final String TAG_INPUTS = "TechStartInputs";
-    private static final String TAG_OUTPUTS = "TechStartOutputs";
+    private static final String TAG_ENCODED = LegacyPatternNbtKeys.TAG_ENCODED;
+    private static final String TAG_INPUTS = LegacyPatternNbtKeys.TAG_INPUTS;
+    private static final String TAG_OUTPUTS = LegacyPatternNbtKeys.TAG_OUTPUTS;
     public static final int FILTER_MODE_WHITELIST = 0;
     public static final int FILTER_MODE_BLACKLIST = 1;
     /**
@@ -116,17 +116,17 @@ public class ItemTest extends Item {
      */
     public boolean hasEncodedItem(ItemStack stack) {
         if (!stack.hasTagCompound()) return false;
-        return stack.getTagCompound().hasKey("EncodedItem");
+        return stack.getTagCompound().hasKey(LegacyPatternNbtKeys.TAG_ENCODED_ITEM);
     }
 
     /**
      */
     public String getEncodedItemName(ItemStack stack) {
         if (!hasEncodedItem(stack)) return "";
-        String raw = stack.getTagCompound().getString("EncodedItem");
+        String raw = stack.getTagCompound().getString(LegacyPatternNbtKeys.TAG_ENCODED_ITEM);
         String normalized = normalizeDisplayName(raw);
         if (!raw.equals(normalized)) {
-            stack.getTagCompound().setString("EncodedItem", normalized);
+            stack.getTagCompound().setString(LegacyPatternNbtKeys.TAG_ENCODED_ITEM, normalized);
         }
         return normalized;
     }
@@ -177,7 +177,7 @@ public class ItemTest extends Item {
         }
         NBTTagCompound nbt = stack.getTagCompound();
         nbt.setBoolean(TAG_ENCODED, true);
-        nbt.setString("EncodedItem", normalizeDisplayName(displayName));
+        nbt.setString(LegacyPatternNbtKeys.TAG_ENCODED_ITEM, normalizeDisplayName(displayName));
         clearVirtualPatternTags(nbt);
 
         NBTTagList inputOreList = new NBTTagList();
@@ -230,7 +230,7 @@ public class ItemTest extends Item {
             stack.getTagCompound().removeTag(TAG_ENCODED);
             stack.getTagCompound().removeTag(TAG_INPUTS);
             stack.getTagCompound().removeTag(TAG_OUTPUTS);
-            stack.getTagCompound().removeTag("EncodedItem");
+            stack.getTagCompound().removeTag(LegacyPatternNbtKeys.TAG_ENCODED_ITEM);
             stack.getTagCompound().removeTag("OreName");
             stack.getTagCompound().removeTag("InputOreName");
             stack.getTagCompound().removeTag("OutputOreName");
@@ -568,7 +568,7 @@ public class ItemTest extends Item {
         }
         NBTTagCompound nbt = stack.getTagCompound();
         nbt.setBoolean(TAG_ENCODED, true);
-        nbt.setString("EncodedItem", normalizeDisplayName(displayName));
+        nbt.setString(LegacyPatternNbtKeys.TAG_ENCODED_ITEM, normalizeDisplayName(displayName));
         clearVirtualPatternTags(nbt);
 
 
@@ -973,7 +973,7 @@ public class ItemTest extends Item {
             return stack.getDisplayName();
         }
         if (isGasTooltipStack(stack) && stack.hasTagCompound()) {
-            return getLegacyGasDisplayName(stack.getTagCompound().getString("sampleintegrationGasName"));
+            return getLegacyGasDisplayName(stack.getTagCompound().getString(LegacyPatternNbtKeys.TAG_GAS_NAME));
         }
         return stack.getDisplayName();
     }
@@ -984,11 +984,11 @@ public class ItemTest extends Item {
         }
         if (stack.hasTagCompound()) {
             NBTTagCompound tag = stack.getTagCompound();
-            if (tag.hasKey("sampleintegrationFluidAmount")) {
-                return Math.max(1, tag.getInteger("sampleintegrationFluidAmount"));
+            if (tag.hasKey(LegacyPatternNbtKeys.TAG_FLUID_AMOUNT)) {
+                return Math.max(1, tag.getInteger(LegacyPatternNbtKeys.TAG_FLUID_AMOUNT));
             }
-            if (tag.hasKey("sampleintegrationGasAmount")) {
-                return Math.max(1, tag.getInteger("sampleintegrationGasAmount"));
+            if (tag.hasKey(LegacyPatternNbtKeys.TAG_GAS_AMOUNT)) {
+                return Math.max(1, tag.getInteger(LegacyPatternNbtKeys.TAG_GAS_AMOUNT));
             }
             if (tag.hasKey(TAG_ITEM_AMOUNT)) {
                 return Math.max(1, tag.getInteger(TAG_ITEM_AMOUNT));
@@ -998,14 +998,15 @@ public class ItemTest extends Item {
     }
 
     private boolean isFluidTooltipStack(ItemStack stack) {
-        return stack != null && !stack.isEmpty() && stack.hasTagCompound() && stack.getTagCompound().hasKey("sampleintegrationFluidAmount");
+        return stack != null && !stack.isEmpty() && stack.hasTagCompound()
+            && stack.getTagCompound().hasKey(LegacyPatternNbtKeys.TAG_FLUID_AMOUNT);
     }
 
     private boolean isGasTooltipStack(ItemStack stack) {
         return stack != null && !stack.isEmpty() && stack.hasTagCompound()
-            && (stack.getTagCompound().hasKey("sampleintegrationGasAmount")
-                || stack.getTagCompound().hasKey("sampleintegrationGasName")
-                || stack.getTagCompound().getBoolean("sampleintegrationGasMarker"));
+            && (stack.getTagCompound().hasKey(LegacyPatternNbtKeys.TAG_GAS_AMOUNT)
+                || stack.getTagCompound().hasKey(LegacyPatternNbtKeys.TAG_GAS_NAME)
+                || stack.getTagCompound().getBoolean(LegacyPatternNbtKeys.TAG_GAS_MARKER));
     }
 
     private String getLegacyOreDisplayName(String oreName) {
@@ -1129,10 +1130,10 @@ public class ItemTest extends Item {
             }
             return normalized;
         }
-        String raw = tag.getString("EncodedItem");
+        String raw = tag.getString(LegacyPatternNbtKeys.TAG_ENCODED_ITEM);
         String normalized = normalizeDisplayName(raw);
         if (!raw.equals(normalized)) {
-            tag.setString("EncodedItem", normalized);
+            tag.setString(LegacyPatternNbtKeys.TAG_ENCODED_ITEM, normalized);
         }
         return normalized;
     }
@@ -1141,7 +1142,7 @@ public class ItemTest extends Item {
      */
     public static boolean hasEncodedItemStatic(ItemStack stack) {
         if (!stack.hasTagCompound()) return false;
-        return stack.getTagCompound().hasKey("EncodedItem");
+        return stack.getTagCompound().hasKey(LegacyPatternNbtKeys.TAG_ENCODED_ITEM);
     }
 
     /**
