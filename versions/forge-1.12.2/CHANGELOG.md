@@ -10,6 +10,8 @@
 - Renamed the public-facing 1.12.2 package identity to `AE2SPS Smart Pattern System`.
 - Updated release metadata, in-game version strings, and README messaging for the AE2S warm-up release.
 - Switched the 1.12.2 line to an AE2S-only runtime direction on top of the CRL / Java 25 stack.
+- Removed obsolete legacy AE2/coremod sources from the 1.12.2 line.
+- Removed the unused Pattern Expander block path; smart patterns are edited from the item GUI.
 
 ## [1.0.8] - 2026-04-25
 

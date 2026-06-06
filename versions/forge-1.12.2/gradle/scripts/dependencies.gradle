@@ -34,7 +34,7 @@ dependencies {
     // Include OSXNarratorBlocker by default for the dev env, for M1+ Macs
     runtimeOnly 'com.cleanroommc:osxnarratorblocker:1.0'
 
-    // 1.12.2 targets AE2S. Legacy AE2 sources remain in-tree but are excluded from compilation.
+    // 1.12.2 targets AE2S.
     compileOnly files('run/mods/AppliedEnergistics2-Supergiant-1.0.0.jar') // Local AE2S jar for compile-time API access
     // TODO: Switch compileOnly input to AE2S dev jar when its API artifact becomes available.
 
