@@ -12,6 +12,7 @@ import appeng.helpers.patternprovider.PatternProviderLogicHost;
 import appeng.util.inv.AppEngInternalInventory;
 import com.ae2smartpatternsystem.ItemTest;
 import com.ae2smartpatternsystem.SmartPatternDetails;
+import com.ae2smartpatternsystem.TechStart;
 import com.ae2smartpatternsystem.integration.ae2.TechStartPatternDetails;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
@@ -24,9 +25,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
-import java.util.Set;
-
 @Mixin(value = PatternProviderLogic.class, remap = false)
 public abstract class PatternProviderLogicMixin {
     @Shadow @Final private AppEngInternalInventory patternInventory;
@@ -34,6 +32,8 @@ public abstract class PatternProviderLogicMixin {
     @Shadow @Final private ObjectSet<AEKey> patternInputs;
     @Shadow @Final private PatternProviderLogicHost host;
     @Shadow @Final private IManagedGridNode mainNode;
+    @Shadow private boolean hasLastSuccessfulPatternHash;
+    @Shadow private int lastSuccessfulPatternHash;
 
     @Inject(method = "updatePatterns", at = @At("HEAD"), cancellable = true)
     private void ae2sps$expandCustomPatterns(CallbackInfo ci) {
@@ -54,7 +54,7 @@ public abstract class PatternProviderLogicMixin {
                         ItemStack virtualStack = expanded.getPattern();
                         AEItemKey key = AEItemKey.of(virtualStack);
                         if (key != null) {
-                            addPattern(new TechStartPatternDetails(key, virtualStack));
+                            addExpandedPattern(key, virtualStack);
                         }
                     }
                     continue;
@@ -67,8 +67,17 @@ public abstract class PatternProviderLogicMixin {
             }
         }
 
+        clearLastSuccessfulPatternIfMissing();
         ICraftingProvider.requestUpdate(this.mainNode);
         ci.cancel();
+    }
+
+    private void addExpandedPattern(AEItemKey key, ItemStack virtualStack) {
+        try {
+            addPattern(new TechStartPatternDetails(key, virtualStack));
+        } catch (IllegalArgumentException e) {
+            TechStart.LOGGER.warn("AE2SPS skipped invalid expanded pattern stack: {}", virtualStack);
+        }
     }
 
     private void addPattern(IPatternDetails pattern) {
@@ -78,5 +87,17 @@ public abstract class PatternProviderLogicMixin {
                 this.patternInputs.add(possibleInput.what().dropSecondary());
             }
         }
+    }
+
+    private void clearLastSuccessfulPatternIfMissing() {
+        if (!this.hasLastSuccessfulPatternHash) {
+            return;
+        }
+        for (IPatternDetails pattern : this.patterns) {
+            if (pattern.getDefinition().hashCode() == this.lastSuccessfulPatternHash) {
+                return;
+            }
+        }
+        this.hasLastSuccessfulPatternHash = false;
     }
 }
