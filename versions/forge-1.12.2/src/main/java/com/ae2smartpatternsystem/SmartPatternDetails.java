@@ -16,9 +16,9 @@ import java.util.HashSet;
 /**
  */
 public class SmartPatternDetails {
-    private static final String TAG_VIRTUAL_INPUT_STACKS = "VirtualInputStacks";
-    private static final String TAG_VIRTUAL_OUTPUT_STACKS = "VirtualOutputStacks";
-    private static final String TAG_VIRTUAL_FILTER_ENTRY_ID = "VirtualFilterEntryId";
+    private static final String TAG_VIRTUAL_INPUT_STACKS = LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_STACKS;
+    private static final String TAG_VIRTUAL_OUTPUT_STACKS = LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_STACKS;
+    private static final String TAG_VIRTUAL_FILTER_ENTRY_ID = LegacyPatternNbtKeys.TAG_VIRTUAL_FILTER_ENTRY_ID;
 
     private final ItemStack patternStack;
     private final List<String> inputOreNames;

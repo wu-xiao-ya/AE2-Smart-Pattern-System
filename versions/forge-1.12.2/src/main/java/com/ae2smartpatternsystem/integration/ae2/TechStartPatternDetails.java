@@ -23,16 +23,16 @@ import java.util.Objects;
 public final class TechStartPatternDetails implements IPatternDetails {
     private static final String TAG_INPUTS = LegacyPatternNbtKeys.TAG_INPUTS;
     private static final String TAG_OUTPUTS = LegacyPatternNbtKeys.TAG_OUTPUTS;
-    private static final String TAG_VIRTUAL_INPUT_STACKS = "VirtualInputStacks";
-    private static final String TAG_VIRTUAL_OUTPUT_STACKS = "VirtualOutputStacks";
-    private static final String TAG_VIRTUAL_INPUT_ORES = "VirtualInputOreNames";
-    private static final String TAG_VIRTUAL_OUTPUT_ORES = "VirtualOutputOreNames";
-    private static final String TAG_VIRTUAL_INPUT_ORE = "VirtualInputOreName";
-    private static final String TAG_VIRTUAL_OUTPUT_ORE = "VirtualOutputOreName";
-    private static final String TAG_EDITOR_INPUT_SLOTS = "EditorInputSlots";
-    private static final String TAG_EDITOR_OUTPUT_SLOTS = "EditorOutputSlots";
-    private static final String TAG_EDITOR_SLOT = "Slot";
-    private static final String TAG_EDITOR_STACK = "Stack";
+    private static final String TAG_VIRTUAL_INPUT_STACKS = LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_STACKS;
+    private static final String TAG_VIRTUAL_OUTPUT_STACKS = LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_STACKS;
+    private static final String TAG_VIRTUAL_INPUT_ORES = LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORES;
+    private static final String TAG_VIRTUAL_OUTPUT_ORES = LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORES;
+    private static final String TAG_VIRTUAL_INPUT_ORE = LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORE_NAME;
+    private static final String TAG_VIRTUAL_OUTPUT_ORE = LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORE_NAME;
+    private static final String TAG_EDITOR_INPUT_SLOTS = LegacyPatternNbtKeys.TAG_EDITOR_INPUT_SLOTS;
+    private static final String TAG_EDITOR_OUTPUT_SLOTS = LegacyPatternNbtKeys.TAG_EDITOR_OUTPUT_SLOTS;
+    private static final String TAG_EDITOR_SLOT = LegacyPatternNbtKeys.TAG_EDITOR_SLOT;
+    private static final String TAG_EDITOR_STACK = LegacyPatternNbtKeys.TAG_EDITOR_STACK;
     private static final String TAG_ITEM_MARKER = LegacyPatternNbtKeys.TAG_ITEM_MARKER;
     private static final String TAG_ITEM_AMOUNT = LegacyPatternNbtKeys.TAG_ITEM_AMOUNT;
 

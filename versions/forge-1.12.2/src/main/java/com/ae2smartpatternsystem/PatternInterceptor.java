@@ -127,9 +127,9 @@ public class PatternInterceptor {
         copy.removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORES);
         copy.removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORE_NAME);
         copy.removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_DISPLAY_NAME);
-        copy.removeTag("VirtualInputStacks");
-        copy.removeTag("VirtualOutputStacks");
-        copy.removeTag("VirtualFilterEntryId");
+        copy.removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_STACKS);
+        copy.removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_STACKS);
+        copy.removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_FILTER_ENTRY_ID);
         return copy;
     }
 

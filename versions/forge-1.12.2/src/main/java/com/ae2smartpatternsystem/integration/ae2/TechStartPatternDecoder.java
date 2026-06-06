@@ -15,20 +15,20 @@ public final class TechStartPatternDecoder implements IPatternDetailsDecoder {
     private static final String TAG_ENCODED_ITEM = LegacyPatternNbtKeys.TAG_ENCODED_ITEM;
     private static final String TAG_INPUTS = LegacyPatternNbtKeys.TAG_INPUTS;
     private static final String TAG_OUTPUTS = LegacyPatternNbtKeys.TAG_OUTPUTS;
-    private static final String TAG_INPUT_ORE = "InputOreName";
-    private static final String TAG_OUTPUT_ORE = "OutputOreName";
-    private static final String TAG_INPUT_ORES = "InputOreNames";
-    private static final String TAG_OUTPUT_ORES = "OutputOreNames";
-    private static final String TAG_INPUT_COUNTS = "InputCounts";
-    private static final String TAG_OUTPUT_COUNTS = "OutputCounts";
-    private static final String TAG_INPUT_FLUIDS = "InputFluids";
-    private static final String TAG_OUTPUT_FLUIDS = "OutputFluids";
-    private static final String TAG_INPUT_GASES = "InputGases";
-    private static final String TAG_OUTPUT_GASES = "OutputGases";
-    private static final String TAG_VIRTUAL_INPUT_ORES = "VirtualInputOreNames";
-    private static final String TAG_VIRTUAL_OUTPUT_ORES = "VirtualOutputOreNames";
-    private static final String TAG_VIRTUAL_INPUT_STACKS = "VirtualInputStacks";
-    private static final String TAG_VIRTUAL_OUTPUT_STACKS = "VirtualOutputStacks";
+    private static final String TAG_INPUT_ORE = LegacyPatternNbtKeys.TAG_INPUT_ORE_NAME;
+    private static final String TAG_OUTPUT_ORE = LegacyPatternNbtKeys.TAG_OUTPUT_ORE_NAME;
+    private static final String TAG_INPUT_ORES = LegacyPatternNbtKeys.TAG_INPUT_ORES;
+    private static final String TAG_OUTPUT_ORES = LegacyPatternNbtKeys.TAG_OUTPUT_ORES;
+    private static final String TAG_INPUT_COUNTS = LegacyPatternNbtKeys.TAG_INPUT_COUNTS;
+    private static final String TAG_OUTPUT_COUNTS = LegacyPatternNbtKeys.TAG_OUTPUT_COUNTS;
+    private static final String TAG_INPUT_FLUIDS = LegacyPatternNbtKeys.TAG_INPUT_FLUIDS;
+    private static final String TAG_OUTPUT_FLUIDS = LegacyPatternNbtKeys.TAG_OUTPUT_FLUIDS;
+    private static final String TAG_INPUT_GASES = LegacyPatternNbtKeys.TAG_INPUT_GASES;
+    private static final String TAG_OUTPUT_GASES = LegacyPatternNbtKeys.TAG_OUTPUT_GASES;
+    private static final String TAG_VIRTUAL_INPUT_ORES = LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORES;
+    private static final String TAG_VIRTUAL_OUTPUT_ORES = LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORES;
+    private static final String TAG_VIRTUAL_INPUT_STACKS = LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_STACKS;
+    private static final String TAG_VIRTUAL_OUTPUT_STACKS = LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_STACKS;
 
     @Override
     public boolean isEncodedPattern(ItemStack stack) {

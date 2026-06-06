@@ -32,10 +32,10 @@ public class ContainerPatternEditor extends Container {
     private static final int DEFAULT_GAS_AMOUNT = 1000;
     private static final String TAG_ITEM_MARKER = LegacyPatternNbtKeys.TAG_ITEM_MARKER;
     private static final String TAG_ITEM_AMOUNT = LegacyPatternNbtKeys.TAG_ITEM_AMOUNT;
-    private static final String TAG_EDITOR_INPUT_SLOTS = "EditorInputSlots";
-    private static final String TAG_EDITOR_OUTPUT_SLOTS = "EditorOutputSlots";
-    private static final String TAG_EDITOR_SLOT = "Slot";
-    private static final String TAG_EDITOR_STACK = "Stack";
+    private static final String TAG_EDITOR_INPUT_SLOTS = LegacyPatternNbtKeys.TAG_EDITOR_INPUT_SLOTS;
+    private static final String TAG_EDITOR_OUTPUT_SLOTS = LegacyPatternNbtKeys.TAG_EDITOR_OUTPUT_SLOTS;
+    private static final String TAG_EDITOR_SLOT = LegacyPatternNbtKeys.TAG_EDITOR_SLOT;
+    private static final String TAG_EDITOR_STACK = LegacyPatternNbtKeys.TAG_EDITOR_STACK;
     private static final String TAG_INPUTS = LegacyPatternNbtKeys.TAG_INPUTS;
     private static final String TAG_OUTPUTS = LegacyPatternNbtKeys.TAG_OUTPUTS;
 

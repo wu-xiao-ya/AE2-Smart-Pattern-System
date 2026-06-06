@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 
 public class ContainerPatternFilter extends Container {
-    private static final String TAG_VIRTUAL_FILTER_ENTRY_ID = "VirtualFilterEntryId";
+    private static final String TAG_VIRTUAL_FILTER_ENTRY_ID = LegacyPatternNbtKeys.TAG_VIRTUAL_FILTER_ENTRY_ID;
 
     private final EntityPlayer player;
     private final ItemStack patternStack;
@@ -358,4 +358,3 @@ public class ContainerPatternFilter extends Container {
         return false;
     }
 }
-
