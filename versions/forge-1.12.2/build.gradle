@@ -69,14 +69,18 @@ configurations {
     implementation.extendsFrom(embed)
 }
 
+def legacyAe2ExcludedSources = [
+        'com/ae2smartpatternsystem/asm/**',
+        'com/ae2smartpatternsystem/mixin/MixinDualityInterface.java',
+        'com/ae2smartpatternsystem/PatternInterceptor.java',
+        'com/ae2smartpatternsystem/WildcardPatternWrapper.java',
+        'com/ae2smartpatternsystem/SimpleAEItemStack.java'
+]
+
 sourceSets {
     main {
         java {
-            exclude 'com/ae2smartpatternsystem/asm/**'
-            exclude 'com/ae2smartpatternsystem/mixin/MixinDualityInterface.java'
-            exclude 'com/ae2smartpatternsystem/PatternInterceptor.java'
-            exclude 'com/ae2smartpatternsystem/WildcardPatternWrapper.java'
-            exclude 'com/ae2smartpatternsystem/SimpleAEItemStack.java'
+            exclude legacyAe2ExcludedSources
         }
     }
 }
@@ -279,11 +283,7 @@ def java25Compiler = javaToolchains.compilerFor {
 tasks.named('compileJava', JavaCompile).configure {
     javaCompiler.set(java25Compiler)
     sourceCompatibility = targetCompatibility = '25'
-    exclude '**/PatternInterceptor.java'
-    exclude '**/WildcardPatternWrapper.java'
-    exclude '**/SimpleAEItemStack.java'
-    exclude '**/asm/**'
-    exclude '**/mixin/MixinDualityInterface.java'
+    exclude legacyAe2ExcludedSources
 }
 
 test {

@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-FMLCorePlugin: com.ae2smartpatternsystem.asm.TechStartCorePlugin
-FMLCorePluginContainsFMLMod: true
-MixinConfigs: mixins.sampleintegration.json
-
