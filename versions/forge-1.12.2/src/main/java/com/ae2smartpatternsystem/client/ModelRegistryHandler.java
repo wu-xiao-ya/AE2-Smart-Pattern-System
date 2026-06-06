@@ -20,9 +20,6 @@ public final class ModelRegistryHandler {
         if (TechStart.ITEM_TEST != null) {
             registerItemModel(TechStart.ITEM_TEST);
         }
-        if (TechStart.PATTERN_EXPANDER != null) {
-            registerItemModel(Item.getItemFromBlock(TechStart.PATTERN_EXPANDER));
-        }
     }
 
     private static void registerItemModel(Item item) {

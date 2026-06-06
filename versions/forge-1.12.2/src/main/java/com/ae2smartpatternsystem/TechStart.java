@@ -1,12 +1,9 @@
 package com.ae2smartpatternsystem;
 
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraft.item.Item;
-import net.minecraft.block.Block;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
@@ -26,7 +23,6 @@ public class TechStart {
     public static final Logger LOGGER = LogManager.getLogger(NAME);
     public static TechStart INSTANCE;
     public static ItemTest ITEM_TEST;
-    public static BlockPatternExpander PATTERN_EXPANDER;
     public static GuiHandler GUI_HANDLER;
 
     @Mod.EventHandler
@@ -35,7 +31,6 @@ public class TechStart {
         LOGGER.info("Starting {}.", NAME);
         ITEM_TEST = new ItemTest();
         GUI_HANDLER = new GuiHandler();
-        PATTERN_EXPANDER = null;
         PacketHandler.register();
         ModConfig.init(event.getSuggestedConfigurationFile());
         NetworkRegistry.INSTANCE.registerGuiHandler(this, GUI_HANDLER);
@@ -47,26 +42,6 @@ public class TechStart {
             return;
         }
         event.getRegistry().register(ITEM_TEST);
-        if (PATTERN_EXPANDER != null) {
-            event.getRegistry().register(new net.minecraft.item.ItemBlock(PATTERN_EXPANDER)
-                .setRegistryName(PATTERN_EXPANDER.getRegistryName()));
-        }
-    }
-
-    @SubscribeEvent
-    public static void onRegisterBlocks(RegistryEvent.Register<Block> event) {
-        if (PATTERN_EXPANDER == null) {
-            return;
-        }
-        event.getRegistry().register(PATTERN_EXPANDER);
-    }
-
-    @Mod.EventHandler
-    public void init(FMLInitializationEvent event) {
-        if (PATTERN_EXPANDER != null) {
-            GameRegistry.registerTileEntity(TileEntityPatternExpander.class,
-                new net.minecraft.util.ResourceLocation(MODID, "pattern_expander"));
-        }
     }
 
     @Mod.EventHandler

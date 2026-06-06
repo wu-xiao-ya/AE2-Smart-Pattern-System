@@ -4,8 +4,6 @@ item.sampleintegration.pattern_integrations.desc0=Wildcard pattern item based on
 item.sampleintegration.pattern_integrations.desc1=Automatically expands to all registered metal recipes
 
 # Blocks
-tile.sampleintegration.pattern_expander.name=Pattern Expander
-tile.sampleintegration.pattern_expander.desc=Dedicated block for editing and managing smart patterns
 
 # GUI
 gui.sampleintegration.pattern_editor=Smart Pattern Editor
@@ -44,7 +42,6 @@ gui.sampleintegration.filter.more=- ...
 # Messages
 message.sampleintegration.pattern_cleared=Pattern data cleared
 message.sampleintegration.hint_edit=Hint: Right-click the smart pattern directly to edit
-message.sampleintegration.no_pattern=Please hold a Smart Pattern item in your main hand
 message.sampleintegration.pattern_saved=Pattern saved
 message.sampleintegration.invalid_amount=Invalid amount
 

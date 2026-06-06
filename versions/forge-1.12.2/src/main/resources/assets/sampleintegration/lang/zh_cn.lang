@@ -4,8 +4,6 @@ item.sampleintegration.pattern_integrations.desc0=基于矿物词典的通配符
 item.sampleintegration.pattern_integrations.desc1=可自动展开为所有已注册的金属配方
 
 # 方块
-tile.sampleintegration.pattern_expander.name=样板扩展器
-tile.sampleintegration.pattern_expander.desc=用于编辑和管理智能样板的专用方块
 
 # GUI
 gui.sampleintegration.pattern_editor=智能样板编辑器
@@ -44,7 +42,6 @@ gui.sampleintegration.filter.more=- ...
 # 消息
 message.sampleintegration.pattern_cleared=样板数据已清除
 message.sampleintegration.hint_edit=提示：直接右键智能样板即可编辑
-message.sampleintegration.no_pattern=请在主手持有智能样板
 message.sampleintegration.pattern_saved=样板已保存
 message.sampleintegration.invalid_amount=数量格式无效
 
