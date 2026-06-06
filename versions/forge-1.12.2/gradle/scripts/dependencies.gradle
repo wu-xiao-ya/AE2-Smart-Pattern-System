@@ -34,10 +34,8 @@ dependencies {
     // Include OSXNarratorBlocker by default for the dev env, for M1+ Macs
     runtimeOnly 'com.cleanroommc:osxnarratorblocker:1.0'
 
-    // 1.12.2 now targets AE2S first. Keep the old AE2UEL jar only while legacy sources still exist in-tree.
+    // 1.12.2 targets AE2S. Legacy AE2 sources remain in-tree but are excluded from compilation.
     compileOnly files('run/mods/AppliedEnergistics2-Supergiant-1.0.0.jar') // Local AE2S jar for compile-time API access
-    compileOnly files('run/mods/ae2-uel-v0.56.8-novaeng_ver.jar') // Transitional legacy compile support while migration finishes
-    rfg.deobf('curse.maven:applied-energistics-2-223794:2915368') // AE2 base for 1.12.2 API compatibility
     // TODO: Switch compileOnly input to AE2S dev jar when its API artifact becomes available.
 
     // Example - Dependency descriptor:
