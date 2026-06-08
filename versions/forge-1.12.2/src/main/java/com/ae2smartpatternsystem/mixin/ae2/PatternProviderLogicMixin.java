@@ -4,7 +4,6 @@ import appeng.api.crafting.IPatternDetails;
 import appeng.api.crafting.PatternDetailsHelper;
 import appeng.api.networking.IManagedGridNode;
 import appeng.api.networking.crafting.ICraftingProvider;
-import appeng.api.stacks.AEItemKey;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.GenericStack;
 import appeng.helpers.patternprovider.PatternProviderLogic;
@@ -13,7 +12,6 @@ import appeng.util.inv.AppEngInternalInventory;
 import com.ae2smartpatternsystem.ItemTest;
 import com.ae2smartpatternsystem.SmartPatternDetails;
 import com.ae2smartpatternsystem.TechStart;
-import com.ae2smartpatternsystem.integration.ae2.TechStartPatternDetails;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.item.ItemStack;
@@ -52,19 +50,13 @@ public abstract class PatternProviderLogicMixin {
                 if (helper.isWildcardPattern()) {
                     for (SmartPatternDetails expanded : helper.expandToVirtualPatterns()) {
                         ItemStack virtualStack = expanded.getPattern();
-                        AEItemKey key = AEItemKey.of(virtualStack);
-                        if (key != null) {
-                            addExpandedPattern(key, virtualStack);
-                        }
+                        addDecodedPattern(virtualStack, world, true);
                     }
                     continue;
                 }
             }
 
-            IPatternDetails decoded = PatternDetailsHelper.decodePattern(stack, world);
-            if (decoded != null) {
-                addPattern(decoded);
-            }
+            addDecodedPattern(stack, world, false);
         }
 
         clearLastSuccessfulPatternIfMissing();
@@ -72,11 +64,18 @@ public abstract class PatternProviderLogicMixin {
         ci.cancel();
     }
 
-    private void addExpandedPattern(AEItemKey key, ItemStack virtualStack) {
+    private void addDecodedPattern(ItemStack stack, World world, boolean expanded) {
         try {
-            addPattern(new TechStartPatternDetails(key, virtualStack));
-        } catch (IllegalArgumentException e) {
-            TechStart.LOGGER.warn("AE2SPS skipped invalid expanded pattern stack: {}", virtualStack);
+            IPatternDetails decoded = PatternDetailsHelper.decodePattern(stack, world);
+            if (decoded != null) {
+                addPattern(decoded);
+            }
+        } catch (RuntimeException e) {
+            if (expanded) {
+                TechStart.LOGGER.warn("AE2SPS skipped invalid expanded pattern stack: {}", stack, e);
+            } else {
+                TechStart.LOGGER.warn("AE2SPS skipped invalid pattern stack: {}", stack, e);
+            }
         }
     }
 
