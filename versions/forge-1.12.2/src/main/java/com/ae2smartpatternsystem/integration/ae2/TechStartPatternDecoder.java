@@ -22,9 +22,15 @@ public final class TechStartPatternDecoder implements IPatternDetailsDecoder {
     private static final String TAG_INPUT_COUNTS = LegacyPatternNbtKeys.TAG_INPUT_COUNTS;
     private static final String TAG_OUTPUT_COUNTS = LegacyPatternNbtKeys.TAG_OUTPUT_COUNTS;
     private static final String TAG_INPUT_FLUIDS = LegacyPatternNbtKeys.TAG_INPUT_FLUIDS;
+    private static final String TAG_INPUT_FLUID_AMOUNTS = LegacyPatternNbtKeys.TAG_INPUT_FLUID_AMOUNTS;
     private static final String TAG_OUTPUT_FLUIDS = LegacyPatternNbtKeys.TAG_OUTPUT_FLUIDS;
+    private static final String TAG_OUTPUT_FLUID_AMOUNTS = LegacyPatternNbtKeys.TAG_OUTPUT_FLUID_AMOUNTS;
     private static final String TAG_INPUT_GASES = LegacyPatternNbtKeys.TAG_INPUT_GASES;
+    private static final String TAG_INPUT_GAS_AMOUNTS = LegacyPatternNbtKeys.TAG_INPUT_GAS_AMOUNTS;
+    private static final String TAG_INPUT_GAS_ITEMS = LegacyPatternNbtKeys.TAG_INPUT_GAS_ITEMS;
     private static final String TAG_OUTPUT_GASES = LegacyPatternNbtKeys.TAG_OUTPUT_GASES;
+    private static final String TAG_OUTPUT_GAS_AMOUNTS = LegacyPatternNbtKeys.TAG_OUTPUT_GAS_AMOUNTS;
+    private static final String TAG_OUTPUT_GAS_ITEMS = LegacyPatternNbtKeys.TAG_OUTPUT_GAS_ITEMS;
     private static final String TAG_VIRTUAL_INPUT_ORES = LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORES;
     private static final String TAG_VIRTUAL_OUTPUT_ORES = LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORES;
     private static final String TAG_VIRTUAL_INPUT_STACKS = LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_STACKS;
@@ -82,25 +88,40 @@ public final class TechStartPatternDecoder implements IPatternDetailsDecoder {
     }
 
     private boolean isEncodedTag(NBTTagCompound tag) {
-        return tag != null && (
-            tag.getBoolean(TAG_ENCODED)
-                || tag.hasKey(TAG_ENCODED_ITEM)
-                || tag.hasKey(TAG_INPUTS)
-                || tag.hasKey(TAG_OUTPUTS)
-                || tag.hasKey(TAG_INPUT_ORE)
-                || tag.hasKey(TAG_OUTPUT_ORE)
-                || tag.hasKey(TAG_INPUT_ORES)
-                || tag.hasKey(TAG_OUTPUT_ORES)
-                || tag.hasKey(TAG_INPUT_COUNTS)
-                || tag.hasKey(TAG_OUTPUT_COUNTS)
-                || tag.hasKey(TAG_INPUT_FLUIDS)
-                || tag.hasKey(TAG_OUTPUT_FLUIDS)
-                || tag.hasKey(TAG_INPUT_GASES)
-                || tag.hasKey(TAG_OUTPUT_GASES)
-                || tag.hasKey(TAG_VIRTUAL_INPUT_ORES)
-                || tag.hasKey(TAG_VIRTUAL_OUTPUT_ORES)
-                || tag.hasKey(TAG_VIRTUAL_INPUT_STACKS)
-                || tag.hasKey(TAG_VIRTUAL_OUTPUT_STACKS)
-        );
+        if (tag == null) {
+            return false;
+        }
+        if (tag.getBoolean(TAG_ENCODED) || tag.hasKey(TAG_ENCODED_ITEM)) {
+            return true;
+        }
+        return hasInputEvidence(tag) && hasOutputEvidence(tag);
+    }
+
+    private boolean hasInputEvidence(NBTTagCompound tag) {
+        return tag.hasKey(TAG_INPUTS)
+            || tag.hasKey(TAG_INPUT_ORE)
+            || tag.hasKey(TAG_INPUT_ORES)
+            || tag.hasKey(TAG_INPUT_COUNTS)
+            || tag.hasKey(TAG_INPUT_FLUIDS)
+            || tag.hasKey(TAG_INPUT_FLUID_AMOUNTS)
+            || tag.hasKey(TAG_INPUT_GASES)
+            || tag.hasKey(TAG_INPUT_GAS_AMOUNTS)
+            || tag.hasKey(TAG_INPUT_GAS_ITEMS)
+            || tag.hasKey(TAG_VIRTUAL_INPUT_ORES)
+            || tag.hasKey(TAG_VIRTUAL_INPUT_STACKS);
+    }
+
+    private boolean hasOutputEvidence(NBTTagCompound tag) {
+        return tag.hasKey(TAG_OUTPUTS)
+            || tag.hasKey(TAG_OUTPUT_ORE)
+            || tag.hasKey(TAG_OUTPUT_ORES)
+            || tag.hasKey(TAG_OUTPUT_COUNTS)
+            || tag.hasKey(TAG_OUTPUT_FLUIDS)
+            || tag.hasKey(TAG_OUTPUT_FLUID_AMOUNTS)
+            || tag.hasKey(TAG_OUTPUT_GASES)
+            || tag.hasKey(TAG_OUTPUT_GAS_AMOUNTS)
+            || tag.hasKey(TAG_OUTPUT_GAS_ITEMS)
+            || tag.hasKey(TAG_VIRTUAL_OUTPUT_ORES)
+            || tag.hasKey(TAG_VIRTUAL_OUTPUT_STACKS);
     }
 }
