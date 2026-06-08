@@ -37,7 +37,7 @@ public final class TechStartPatternDecoder implements IPatternDetailsDecoder {
         }
         boolean encoded = isEncodedTag(stack.getTagCompound());
         if (encoded) {
-            TechStart.LOGGER.info(
+            TechStart.LOGGER.debug(
                 "AE2SPS decoder accepted pattern stack: {}, inputs={}, outputs={}",
                 stack,
                 ItemTest.getInputOreNamesStatic(stack),

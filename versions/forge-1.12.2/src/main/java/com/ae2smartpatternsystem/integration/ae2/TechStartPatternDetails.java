@@ -14,6 +14,8 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -35,10 +37,23 @@ public final class TechStartPatternDetails implements IPatternDetails {
     private static final String TAG_EDITOR_STACK = LegacyPatternNbtKeys.TAG_EDITOR_STACK;
     private static final String TAG_ITEM_MARKER = LegacyPatternNbtKeys.TAG_ITEM_MARKER;
     private static final String TAG_ITEM_AMOUNT = LegacyPatternNbtKeys.TAG_ITEM_AMOUNT;
+    private static final String TAG_FLUID_AMOUNT = LegacyPatternNbtKeys.TAG_FLUID_AMOUNT;
+    private static final String TAG_GAS_MARKER = LegacyPatternNbtKeys.TAG_GAS_MARKER;
+    private static final String TAG_GAS_NAME = LegacyPatternNbtKeys.TAG_GAS_NAME;
+    private static final String TAG_GAS_AMOUNT = LegacyPatternNbtKeys.TAG_GAS_AMOUNT;
+    private static final String TAG_DISPLAY_ONLY = "DisplayOnly";
+    private static final String TAG_GAS_STACK = "GasStack";
+    private static final String TAG_GAS_STACK_AMOUNT = "amount";
 
     private final AEItemKey definition;
     private final IInput[] inputs;
     private final GenericStack[] outputs;
+
+    private static boolean gasReflectionReady;
+    private static Method cachedGasRegistryGetGas;
+    private static Constructor<?> cachedGasStackCtor;
+    private static Method cachedPackGas2Packet;
+    private static Method cachedPackGas2Drops;
 
     public TechStartPatternDetails(AEItemKey definition, ItemStack encodedStack) {
         this.definition = Objects.requireNonNull(definition, "definition");
@@ -72,6 +87,7 @@ public final class TechStartPatternDetails implements IPatternDetails {
         List<GenericStack> stacks = new ArrayList<>();
         stacks.addAll(resolveConcreteItemInputs(encodedStack));
         stacks.addAll(resolveFluidStacks(encodedStack, true));
+        stacks.addAll(resolveGasStacks(encodedStack, true));
         return stacks.stream()
             .filter(Objects::nonNull)
             .map(SimpleInput::new)
@@ -87,6 +103,12 @@ public final class TechStartPatternDetails implements IPatternDetails {
             merged.merge(stack.what(), stack.amount(), Long::sum);
         }
         for (GenericStack stack : resolveFluidStacks(encodedStack, false)) {
+            if (stack == null || stack.what() == null || stack.amount() <= 0) {
+                continue;
+            }
+            merged.merge(stack.what(), stack.amount(), Long::sum);
+        }
+        for (GenericStack stack : resolveGasStacks(encodedStack, false)) {
             if (stack == null || stack.what() == null || stack.amount() <= 0) {
                 continue;
             }
@@ -214,7 +236,7 @@ public final class TechStartPatternDetails implements IPatternDetails {
                 continue;
             }
             ItemStack raw = new ItemStack(entry.getCompoundTag(TAG_EDITOR_STACK));
-            if (raw.isEmpty()) {
+            if (raw.isEmpty() || isNonItemMarkerStack(raw)) {
                 continue;
             }
             ordered.add(new PreviewSlot(entry.getInteger(TAG_EDITOR_SLOT), stripItemMarkerTags(raw)));
@@ -278,6 +300,43 @@ public final class TechStartPatternDetails implements IPatternDetails {
         return cleaned;
     }
 
+    private static ItemStack stripGasMarkerTags(ItemStack stack) {
+        return stripGasMarkerTags(stack, stack == null ? 0 : stack.getCount());
+    }
+
+    private static ItemStack stripGasMarkerTags(ItemStack stack, int amount) {
+        if (stack == null || stack.isEmpty() || !stack.hasTagCompound()) {
+            return stack;
+        }
+        ItemStack cleaned = stack.copy();
+        cleaned.setCount(Math.max(1, amount));
+        NBTTagCompound tag = cleaned.getTagCompound();
+        if (tag == null) {
+            return cleaned;
+        }
+        tag.removeTag(TAG_GAS_MARKER);
+        tag.removeTag(TAG_GAS_NAME);
+        tag.removeTag(TAG_GAS_AMOUNT);
+        tag.removeTag(TAG_DISPLAY_ONLY);
+        if (tag.hasKey(TAG_GAS_STACK, 10)) {
+            NBTTagCompound gasStackTag = tag.getCompoundTag(TAG_GAS_STACK);
+            gasStackTag.setInteger(TAG_GAS_STACK_AMOUNT, Math.max(1, amount));
+            tag.setTag(TAG_GAS_STACK, gasStackTag);
+        }
+        if (tag.getKeySet().isEmpty()) {
+            cleaned.setTagCompound(null);
+        }
+        return cleaned;
+    }
+
+    private static boolean isNonItemMarkerStack(ItemStack stack) {
+        if (stack == null || stack.isEmpty() || !stack.hasTagCompound()) {
+            return false;
+        }
+        NBTTagCompound tag = stack.getTagCompound();
+        return tag.hasKey(TAG_FLUID_AMOUNT) || tag.getBoolean(TAG_GAS_MARKER) || tag.hasKey(TAG_GAS_NAME);
+    }
+
     private static List<GenericStack> resolveFluidStacks(ItemStack encodedStack, boolean input) {
         List<String> fluids = input ? ItemTest.getInputFluidsStatic(encodedStack) : ItemTest.getOutputFluidsStatic(encodedStack);
         List<Integer> amounts = input ? ItemTest.getInputFluidAmountsStatic(encodedStack) : ItemTest.getOutputFluidAmountsStatic(encodedStack);
@@ -298,6 +357,88 @@ public final class TechStartPatternDetails implements IPatternDetails {
             }
         }
         return result;
+    }
+
+    private static List<GenericStack> resolveGasStacks(ItemStack encodedStack, boolean input) {
+        List<String> gases = input ? ItemTest.getInputGasesStatic(encodedStack) : ItemTest.getOutputGasesStatic(encodedStack);
+        List<Integer> amounts = input ? ItemTest.getInputGasAmountsStatic(encodedStack) : ItemTest.getOutputGasAmountsStatic(encodedStack);
+        List<ItemStack> gasItems = input ? ItemTest.getInputGasItemsStatic(encodedStack) : ItemTest.getOutputGasItemsStatic(encodedStack);
+        List<GenericStack> result = new ArrayList<>();
+        for (int i = 0; i < gases.size(); i++) {
+            String gasName = gases.get(i);
+            int amount = i < amounts.size() ? amounts.get(i) : 0;
+            if (gasName == null || gasName.isEmpty() || amount <= 0) {
+                continue;
+            }
+            ItemStack stack = resolveGasItemStack(gasName, amount, gasItems, i);
+            GenericStack generic = GenericStack.fromItemStack(stripGasMarkerTags(stack, amount));
+            if (generic != null && generic.amount() > 0) {
+                result.add(new GenericStack(generic.what(), amount));
+            }
+        }
+        return result;
+    }
+
+    private static ItemStack resolveGasItemStack(String gasName, int amount, List<ItemStack> gasItems, int index) {
+        ItemStack packed = createPackedGasStack(gasName, amount, false);
+        if (!packed.isEmpty()) {
+            return packed;
+        }
+        if (gasItems != null && index < gasItems.size()) {
+            ItemStack saved = gasItems.get(index);
+            if (saved != null && !saved.isEmpty()) {
+                return stripGasMarkerTags(saved, amount);
+            }
+        }
+        return createPackedGasStack(gasName, amount, true);
+    }
+
+    private static ItemStack createPackedGasStack(String gasName, int amount, boolean drops) {
+        initGasReflection();
+        Method packer = drops ? cachedPackGas2Drops : cachedPackGas2Packet;
+        if (cachedGasRegistryGetGas == null || cachedGasStackCtor == null || packer == null) {
+            return ItemStack.EMPTY;
+        }
+        try {
+            Object gas = cachedGasRegistryGetGas.invoke(null, gasName);
+            if (gas == null) {
+                return ItemStack.EMPTY;
+            }
+            Object gasStack = cachedGasStackCtor.newInstance(gas, Math.max(1, amount));
+            Object packed = packer.invoke(null, gasStack);
+            if (packed instanceof ItemStack) {
+                ItemStack stack = ((ItemStack) packed).copy();
+                if (!stack.isEmpty()) {
+                    stack.setCount(Math.max(1, amount));
+                }
+                return stack;
+            }
+        } catch (ReflectiveOperationException | RuntimeException ignored) {
+            return ItemStack.EMPTY;
+        }
+        return ItemStack.EMPTY;
+    }
+
+    private static void initGasReflection() {
+        if (gasReflectionReady) {
+            return;
+        }
+        gasReflectionReady = true;
+        try {
+            Class<?> gasRegistryClass = Class.forName("mekanism.api.gas.GasRegistry");
+            Class<?> gasClass = Class.forName("mekanism.api.gas.Gas");
+            Class<?> gasStackClass = Class.forName("mekanism.api.gas.GasStack");
+            Class<?> fakeGasesClass = Class.forName("com.glodblock.github.integration.mek.FakeGases");
+            cachedGasRegistryGetGas = gasRegistryClass.getMethod("getGas", String.class);
+            cachedGasStackCtor = gasStackClass.getConstructor(gasClass, int.class);
+            cachedPackGas2Packet = fakeGasesClass.getMethod("packGas2Packet", gasStackClass);
+            cachedPackGas2Drops = fakeGasesClass.getMethod("packGas2Drops", gasStackClass);
+        } catch (ReflectiveOperationException | RuntimeException ignored) {
+            cachedGasRegistryGetGas = null;
+            cachedGasStackCtor = null;
+            cachedPackGas2Packet = null;
+            cachedPackGas2Drops = null;
+        }
     }
 
     private static final class SimpleInput implements IInput {

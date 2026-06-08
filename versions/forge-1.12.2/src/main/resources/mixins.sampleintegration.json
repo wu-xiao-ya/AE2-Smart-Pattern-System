@@ -4,8 +4,7 @@
 	"package": "com.ae2smartpatternsystem.mixin",
 	"refmap": "mixins.sampleintegration.refmap.json",
 	"mixins": [
-		"ae2.PatternProviderLogicMixin",
-		"defensive_mixin.MixinRegistryManager"
+		"ae2.PatternProviderLogicMixin"
 	],
 	"client": [],
 	"server": [],
@@ -13,4 +12,3 @@
 		"defaultRequire": 1
 	}
 }
-

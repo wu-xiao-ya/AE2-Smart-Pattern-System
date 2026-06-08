@@ -730,39 +730,53 @@ public class ItemTest extends Item {
     /**
      */
     public static List<String> getInputGasesStatic(ItemStack stack) {
-        if (!hasEncodedItemStatic(stack) || !stack.hasTagCompound()) return new ArrayList<>();
+        if (!hasReadableGasTags(stack, TAG_INPUT_GASES, TAG_INPUT_GAS_AMOUNTS, TAG_INPUT_GAS_ITEMS)) return new ArrayList<>();
         return readStringList(stack.getTagCompound(), TAG_INPUT_GASES, "");
     }
 
     /**
      */
     public static List<Integer> getInputGasAmountsStatic(ItemStack stack) {
-        if (!hasEncodedItemStatic(stack) || !stack.hasTagCompound()) return new ArrayList<>();
+        if (!hasReadableGasTags(stack, TAG_INPUT_GASES, TAG_INPUT_GAS_AMOUNTS, TAG_INPUT_GAS_ITEMS)) return new ArrayList<>();
         return readIntList(stack.getTagCompound(), TAG_INPUT_GAS_AMOUNTS, "");
     }
 
     /**
      */
     public static List<String> getOutputGasesStatic(ItemStack stack) {
-        if (!hasEncodedItemStatic(stack) || !stack.hasTagCompound()) return new ArrayList<>();
+        if (!hasReadableGasTags(stack, TAG_OUTPUT_GASES, TAG_OUTPUT_GAS_AMOUNTS, TAG_OUTPUT_GAS_ITEMS)) return new ArrayList<>();
         return readStringList(stack.getTagCompound(), TAG_OUTPUT_GASES, "");
     }
 
     /**
      */
     public static List<Integer> getOutputGasAmountsStatic(ItemStack stack) {
-        if (!hasEncodedItemStatic(stack) || !stack.hasTagCompound()) return new ArrayList<>();
+        if (!hasReadableGasTags(stack, TAG_OUTPUT_GASES, TAG_OUTPUT_GAS_AMOUNTS, TAG_OUTPUT_GAS_ITEMS)) return new ArrayList<>();
         return readIntList(stack.getTagCompound(), TAG_OUTPUT_GAS_AMOUNTS, "");
     }
 
     public static List<ItemStack> getInputGasItemsStatic(ItemStack stack) {
-        if (!hasEncodedItemStatic(stack) || !stack.hasTagCompound()) return new ArrayList<>();
+        if (!hasReadableGasTags(stack, TAG_INPUT_GASES, TAG_INPUT_GAS_AMOUNTS, TAG_INPUT_GAS_ITEMS)) return new ArrayList<>();
         return readItemStackList(stack.getTagCompound(), TAG_INPUT_GAS_ITEMS);
     }
 
     public static List<ItemStack> getOutputGasItemsStatic(ItemStack stack) {
-        if (!hasEncodedItemStatic(stack) || !stack.hasTagCompound()) return new ArrayList<>();
+        if (!hasReadableGasTags(stack, TAG_OUTPUT_GASES, TAG_OUTPUT_GAS_AMOUNTS, TAG_OUTPUT_GAS_ITEMS)) return new ArrayList<>();
         return readItemStackList(stack.getTagCompound(), TAG_OUTPUT_GAS_ITEMS);
+    }
+
+    private static boolean hasReadableGasTags(ItemStack stack, String gasListKey, String amountListKey, String itemListKey) {
+        if (stack == null || stack.isEmpty() || !stack.hasTagCompound()) {
+            return false;
+        }
+        if (hasEncodedItemStatic(stack)) {
+            return true;
+        }
+        NBTTagCompound tag = stack.getTagCompound();
+        return tag != null && (tag.getBoolean(TAG_ENCODED)
+            || tag.hasKey(gasListKey)
+            || tag.hasKey(amountListKey)
+            || tag.hasKey(itemListKey));
     }
 
 

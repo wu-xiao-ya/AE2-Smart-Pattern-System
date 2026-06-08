@@ -486,7 +486,7 @@ public class ContainerPatternEditor extends Container {
         String inputOreName = useWildcardPair ? toWildcardPattern(selectedInputOre) : selectedInputOre;
         String outputOreName = useWildcardPair ? toWildcardPattern(selectedOutputOre) : selectedOutputOre;
         String displayName = selectedRecipe[2];
-        TechStart.LOGGER.info(
+        TechStart.LOGGER.debug(
             "Encoding selected pattern: selectedInput={}, selectedOutput={}, encodedInput={}, encodedOutput={}, wildcard={}",
             selectedInputOre,
             selectedOutputOre,
@@ -526,6 +526,7 @@ public class ContainerPatternEditor extends Container {
                 if (gasInfo != null && gasInfo.gasName != null && !gasInfo.gasName.isEmpty()) {
                     inputGases.add(gasInfo.gasName);
                     inputGasAmounts.add(gasInfo.amount);
+                    inputGasItems.add(stripGasMarkerTag(stack.copy()));
                 }
             }
         }
@@ -544,6 +545,7 @@ public class ContainerPatternEditor extends Container {
                 if (gasInfo != null && gasInfo.gasName != null && !gasInfo.gasName.isEmpty()) {
                     outputGases.add(gasInfo.gasName);
                     outputGasAmounts.add(gasInfo.amount);
+                    outputGasItems.add(stripGasMarkerTag(stack.copy()));
                 }
             }
         }
@@ -1351,7 +1353,7 @@ public class ContainerPatternEditor extends Container {
         }
 
         CandidatePair anchor = findBestCandidatePair(inputStack, outputStack, inputOreNames, outputOreNames);
-        TechStart.LOGGER.info(
+        TechStart.LOGGER.debug(
             "deriveRecipes inputStack={} inputOres={} outputStack={} outputOres={} anchor={}",
             describeStack(inputStack),
             inputOreNames,
