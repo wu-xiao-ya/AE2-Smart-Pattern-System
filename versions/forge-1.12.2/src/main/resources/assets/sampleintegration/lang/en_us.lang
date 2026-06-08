@@ -66,13 +66,3 @@ tooltip.sampleintegration.ore_type=Ore Type: %s
 tooltip.sampleintegration.open_editor=Right-click to open editor
 tooltip.sampleintegration.open_pattern_editor=Right-click to open pattern editor directly
 tooltip.sampleintegration.mark_hint=Shift + Right-click to clear encoded data.
-
-# Commands
-command.sampleintegration.expandpattern.usage=/expandpattern - Expand the wildcard pattern in your hand into virtual patterns.
-command.sampleintegration.expandpattern.only_player=Only players can run this command.
-command.sampleintegration.expandpattern.hold_pattern=Hold a smart pattern in your main hand.
-command.sampleintegration.expandpattern.not_encoded=This pattern is not encoded.
-command.sampleintegration.expandpattern.not_wildcard=This is not a wildcard pattern.
-command.sampleintegration.expandpattern.expanding=Expanding wildcard pattern: %s -> %s
-command.sampleintegration.expandpattern.expanded=Expanded into %s virtual patterns.
-command.sampleintegration.expandpattern.created=Created %s virtual patterns.

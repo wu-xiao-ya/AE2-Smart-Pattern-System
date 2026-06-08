@@ -48,7 +48,7 @@ public class ModConfig {
 
     private static void sync() {
         String category = CATEGORY_PATTERN_EXPANDER;
-        config.addCustomCategoryComment(category, "Pattern Expander settings");
+        config.addCustomCategoryComment(category, "Smart Pattern settings");
 
         patternExpanderScanIntervalTicks = config.getInt(
             "scanIntervalTicks",
