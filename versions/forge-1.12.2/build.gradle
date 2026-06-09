@@ -257,7 +257,7 @@ idea {
 }
 
 compileTestJava {
-    sourceCompatibility = targetCompatibility = 8
+    sourceCompatibility = targetCompatibility = 25
 }
 
 def java25Compiler = javaToolchains.compilerFor {
@@ -272,7 +272,7 @@ tasks.named('compileJava', JavaCompile).configure {
 test {
     useJUnitPlatform()
     javaLauncher.set(javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(8)
+        languageVersion = JavaLanguageVersion.of(25)
     })
     if (propertyBool('show_testing_output')) {
         testLogging {
