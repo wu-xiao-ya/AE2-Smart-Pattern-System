@@ -115,8 +115,9 @@ public class ItemTest extends Item {
     /**
      */
     public boolean hasEncodedItem(ItemStack stack) {
-        if (!stack.hasTagCompound()) return false;
-        return stack.getTagCompound().hasKey(LegacyPatternNbtKeys.TAG_ENCODED_ITEM);
+        if (stack == null || stack.isEmpty() || !stack.hasTagCompound()) return false;
+        NBTTagCompound tag = stack.getTagCompound();
+        return tag.getBoolean(TAG_ENCODED) || tag.hasKey(LegacyPatternNbtKeys.TAG_ENCODED_ITEM);
     }
 
     /**
@@ -178,7 +179,8 @@ public class ItemTest extends Item {
         NBTTagCompound nbt = stack.getTagCompound();
         nbt.setBoolean(TAG_ENCODED, true);
         nbt.setString(LegacyPatternNbtKeys.TAG_ENCODED_ITEM, normalizeDisplayName(displayName));
-        clearVirtualPatternTags(nbt);
+        clearVirtualPatternTagsIfChanged(nbt, inputOreNames, outputOreNames);
+        clearFluidAndGasTags(nbt);
 
         NBTTagList inputOreList = new NBTTagList();
         NBTTagList inputCountList = new NBTTagList();
@@ -569,7 +571,7 @@ public class ItemTest extends Item {
         NBTTagCompound nbt = stack.getTagCompound();
         nbt.setBoolean(TAG_ENCODED, true);
         nbt.setString(LegacyPatternNbtKeys.TAG_ENCODED_ITEM, normalizeDisplayName(displayName));
-        clearVirtualPatternTags(nbt);
+        clearVirtualPatternTagsIfChanged(nbt, inputOreNames, outputOreNames);
 
 
         NBTTagList inputOreList = new NBTTagList();
@@ -699,32 +701,85 @@ public class ItemTest extends Item {
         nbt.removeTag(LegacyPatternNbtKeys.TAG_VIRTUAL_FILTER_ENTRY_ID);
     }
 
+    private static void clearVirtualPatternTagsIfChanged(NBTTagCompound nbt, List<String> inputOreNames, List<String> outputOreNames) {
+        if (nbt == null || !hasVirtualPatternTags(nbt)) {
+            return;
+        }
+        List<String> virtualInputs = readStringList(nbt, LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORES, LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORE_NAME);
+        List<String> virtualOutputs = readStringList(nbt, LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORES, LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORE_NAME);
+        if (!virtualInputs.equals(inputOreNames) || !virtualOutputs.equals(outputOreNames)) {
+            clearVirtualPatternTags(nbt);
+        }
+    }
+
+    private static boolean hasVirtualPatternTags(NBTTagCompound nbt) {
+        return nbt != null && (
+            nbt.hasKey(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORE_NAME)
+                || nbt.hasKey(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORE_NAME)
+                || nbt.hasKey(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_ORES)
+                || nbt.hasKey(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_ORES)
+                || nbt.hasKey(LegacyPatternNbtKeys.TAG_VIRTUAL_INPUT_STACKS)
+                || nbt.hasKey(LegacyPatternNbtKeys.TAG_VIRTUAL_OUTPUT_STACKS)
+                || nbt.hasKey(LegacyPatternNbtKeys.TAG_VIRTUAL_DISPLAY_NAME)
+                || nbt.hasKey(LegacyPatternNbtKeys.TAG_VIRTUAL_FILTER_ENTRY_ID)
+        );
+    }
+
+    private static void clearFluidAndGasTags(NBTTagCompound nbt) {
+        if (nbt == null) {
+            return;
+        }
+        nbt.removeTag(TAG_INPUT_FLUIDS);
+        nbt.removeTag(TAG_INPUT_FLUID_AMOUNTS);
+        nbt.removeTag(TAG_OUTPUT_FLUIDS);
+        nbt.removeTag(TAG_OUTPUT_FLUID_AMOUNTS);
+        nbt.removeTag(TAG_INPUT_GASES);
+        nbt.removeTag(TAG_INPUT_GAS_AMOUNTS);
+        nbt.removeTag(TAG_OUTPUT_GASES);
+        nbt.removeTag(TAG_OUTPUT_GAS_AMOUNTS);
+        nbt.removeTag(TAG_INPUT_GAS_ITEMS);
+        nbt.removeTag(TAG_OUTPUT_GAS_ITEMS);
+    }
+
     /**
      */
     public static List<String> getInputFluidsStatic(ItemStack stack) {
-        if (!hasEncodedItemStatic(stack) || !stack.hasTagCompound()) return new ArrayList<>();
+        if (!hasReadableFluidTags(stack, TAG_INPUT_FLUIDS, TAG_INPUT_FLUID_AMOUNTS)) return new ArrayList<>();
         return readStringList(stack.getTagCompound(), TAG_INPUT_FLUIDS, "");
     }
 
     /**
      */
     public static List<Integer> getInputFluidAmountsStatic(ItemStack stack) {
-        if (!hasEncodedItemStatic(stack) || !stack.hasTagCompound()) return new ArrayList<>();
+        if (!hasReadableFluidTags(stack, TAG_INPUT_FLUIDS, TAG_INPUT_FLUID_AMOUNTS)) return new ArrayList<>();
         return readIntList(stack.getTagCompound(), TAG_INPUT_FLUID_AMOUNTS, "");
     }
 
     /**
      */
     public static List<String> getOutputFluidsStatic(ItemStack stack) {
-        if (!hasEncodedItemStatic(stack) || !stack.hasTagCompound()) return new ArrayList<>();
+        if (!hasReadableFluidTags(stack, TAG_OUTPUT_FLUIDS, TAG_OUTPUT_FLUID_AMOUNTS)) return new ArrayList<>();
         return readStringList(stack.getTagCompound(), TAG_OUTPUT_FLUIDS, "");
     }
 
     /**
      */
     public static List<Integer> getOutputFluidAmountsStatic(ItemStack stack) {
-        if (!hasEncodedItemStatic(stack) || !stack.hasTagCompound()) return new ArrayList<>();
+        if (!hasReadableFluidTags(stack, TAG_OUTPUT_FLUIDS, TAG_OUTPUT_FLUID_AMOUNTS)) return new ArrayList<>();
         return readIntList(stack.getTagCompound(), TAG_OUTPUT_FLUID_AMOUNTS, "");
+    }
+
+    private static boolean hasReadableFluidTags(ItemStack stack, String fluidListKey, String amountListKey) {
+        if (stack == null || stack.isEmpty() || !stack.hasTagCompound()) {
+            return false;
+        }
+        if (hasEncodedItemStatic(stack)) {
+            return true;
+        }
+        NBTTagCompound tag = stack.getTagCompound();
+        return tag != null && (tag.getBoolean(TAG_ENCODED)
+            || tag.hasKey(fluidListKey)
+            || tag.hasKey(amountListKey));
     }
 
     /**
@@ -1156,8 +1211,9 @@ public class ItemTest extends Item {
     /**
      */
     public static boolean hasEncodedItemStatic(ItemStack stack) {
-        if (!stack.hasTagCompound()) return false;
-        return stack.getTagCompound().hasKey(LegacyPatternNbtKeys.TAG_ENCODED_ITEM);
+        if (stack == null || stack.isEmpty() || !stack.hasTagCompound()) return false;
+        NBTTagCompound tag = stack.getTagCompound();
+        return tag.getBoolean(TAG_ENCODED) || tag.hasKey(LegacyPatternNbtKeys.TAG_ENCODED_ITEM);
     }
 
     /**

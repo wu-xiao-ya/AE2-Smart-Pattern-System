@@ -8,6 +8,8 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
+import java.util.List;
+
 /**
  */
 public class PacketUpdatePatternCount implements IMessage {
@@ -50,30 +52,52 @@ public class PacketUpdatePatternCount implements IMessage {
                 
                 if (!patternStack.isEmpty() && patternStack.getItem() instanceof ItemTest) {
                     ItemTest patternItem = (ItemTest) patternStack.getItem();
-                    
 
-                    String inputOre = patternItem.getInputOreName(patternStack);
-                    String outputOre = patternItem.getOutputOreName(patternStack);
+                    List<String> inputOres = ItemTest.getInputOreNamesStatic(patternStack);
+                    List<Integer> inputCounts = ItemTest.getInputCountsStatic(patternStack);
+                    List<String> outputOres = ItemTest.getOutputOreNamesStatic(patternStack);
+                    List<Integer> outputCounts = ItemTest.getOutputCountsStatic(patternStack);
                     String displayName = patternItem.getEncodedItemName(patternStack);
-                    int inputCount = patternItem.getInputCount(patternStack);
-                    int outputCount = patternItem.getOutputCount(patternStack);
-                    
 
                     if (message.isInput) {
-                        inputCount = message.count;
+                        setFirstCount(inputCounts, message.count);
                     } else {
-                        outputCount = message.count;
+                        setFirstCount(outputCounts, message.count);
                     }
-                    
 
-                    if (!inputOre.isEmpty() && !outputOre.isEmpty()) {
-                        patternItem.setEncodedItem(patternStack, inputOre, outputOre, displayName, inputCount, outputCount);
+                    if (!inputOres.isEmpty() && !outputOres.isEmpty()) {
+                        patternItem.setEncodedItemWithFluidsAndGases(
+                            patternStack,
+                            inputOres,
+                            inputCounts,
+                            outputOres,
+                            outputCounts,
+                            ItemTest.getInputFluidsStatic(patternStack),
+                            ItemTest.getInputFluidAmountsStatic(patternStack),
+                            ItemTest.getOutputFluidsStatic(patternStack),
+                            ItemTest.getOutputFluidAmountsStatic(patternStack),
+                            ItemTest.getInputGasesStatic(patternStack),
+                            ItemTest.getInputGasAmountsStatic(patternStack),
+                            ItemTest.getOutputGasesStatic(patternStack),
+                            ItemTest.getOutputGasAmountsStatic(patternStack),
+                            ItemTest.getInputGasItemsStatic(patternStack),
+                            ItemTest.getOutputGasItemsStatic(patternStack),
+                            displayName
+                        );
                     }
                 }
             });
             
             return null;
         }
+
+        private static void setFirstCount(List<Integer> counts, int count) {
+            int normalized = Math.max(1, count);
+            if (counts.isEmpty()) {
+                counts.add(normalized);
+            } else {
+                counts.set(0, normalized);
+            }
+        }
     }
 }
-

@@ -497,8 +497,8 @@ public class ContainerPatternEditor extends Container {
 
         ItemTest patternItem = (ItemTest) patternStack.getItem();
 
-        int inputCount = patternItem.getInputCount(patternStack);
-        int outputCount = patternItem.getOutputCount(patternStack);
+        int inputCount = getItemMarkerAmount(getInputStack());
+        int outputCount = getItemMarkerAmount(getOutputStack());
         
 
         List<String> inputFluids = new ArrayList<>();
