@@ -1,11 +1,11 @@
 # AE2SPS 智能样板系统 (Smart Pattern System)
-*面向 AE2 1.12.2 分支的智能样板系统 - `1.0.9-beta-AE2S` 预热版*
+*面向 AE2S 1.12.2 分支的智能样板系统 - `1.0.9-beta-AE2S` 预热版*
 
 > 🚀 **v1.0.9-beta-AE2S 预发布！** 详见 [更新日志](CHANGELOG.md)
 
 [![Minecraft](https://img.shields.io/badge/Minecraft-1.12.2-green.svg)](https://www.minecraft.net/)
 [![Forge](https://img.shields.io/badge/Forge-14.23.5.2847-red.svg)](https://files.minecraftforge.net/)
-[![Java](https://img.shields.io/badge/Java-8+-blue.svg)](https://adoptium.net/)
+[![Java](https://img.shields.io/badge/Java-25-blue.svg)](https://adoptium.net/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-1.0.9--beta--AE2S-orange.svg)](CHANGELOG.md)
 
@@ -30,8 +30,10 @@
 ### 必需依赖
 - **Minecraft**: 1.12.2
 - **Minecraft Forge**: 14.23.5.2847+
-- **AE2S**: `1.0.9-beta-AE2S`
+- **AE2S**: Applied Energistics 2 - Supergiant `1.0.0`
 - **运行环境**: Cleanroom Loader (CRL) + Java 25
+
+> 本 1.12.2 分支只支持 AE2S（modid: `ae2`）。普通 AE2 / AE2UEL 环境不兼容。
 
 ## 🚀 快速开始
 
@@ -101,7 +103,7 @@
 
 ## 🙏 致谢
 
-- **AE2S 团队**: 为即将到来的 Applied Energistics 2 Supergiant 提供方向
+- **AE2S 团队**: 为 Applied Energistics 2 Supergiant 提供基础生态
 - **Minecraft Forge 社区**: 强大的模组开发框架
 - **CleanroomMC**: RetroFuturaGradle 构建系统
 - **矿物辞典系统**: Forge 统一物品标签系统

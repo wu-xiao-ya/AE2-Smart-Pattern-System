@@ -43,7 +43,7 @@ if (propertyBool('publish_to_curseforge')) {
         // noinspection GroovyAssignabilityCheck
         project {
             id = propertyString('curseforge_project_id')
-            addGameVersion 'Java 8'
+            addGameVersion 'Java 25'
             addGameVersion 'Forge'
             addGameVersion '1.12.2'
             releaseType = propertyString('release_type')

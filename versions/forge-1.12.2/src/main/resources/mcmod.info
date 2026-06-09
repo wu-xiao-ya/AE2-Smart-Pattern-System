@@ -10,7 +10,7 @@
 	"credits": "AE2S Team, Minecraft Forge Community, CleanroomMC",
 	"logoFile": "assets/sampleintegration/textures/items/pattern_integrations.png",
 	"screenshots": [],
-	"dependencies": ["appliedenergistics2"]
+	"dependencies": ["required-after:ae2@[1.0.0,)"]
 	,
 	"mixinConfigs": ["mixins.sampleintegration.json"]
 }]

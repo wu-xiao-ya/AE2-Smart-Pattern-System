@@ -2,6 +2,8 @@
 
 本项目遵循 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) 规范和[语义化版本](https://semver.org/lang/zh-CN/)。
 
+> `1.0.9-beta-AE2S` 起仅支持 AE2S；以下 `1.0.8` 及更早记录属于旧 AE2UEL/MMCE/AE2FC 兼容线历史，不代表当前发布兼容范围。
+
 ---
 
 ## [1.0.9-beta-AE2S] - 2026-05-23

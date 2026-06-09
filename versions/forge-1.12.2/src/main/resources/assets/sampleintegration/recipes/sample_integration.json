@@ -7,19 +7,16 @@
   ],
   "key": {
     "Q": {
-      "item": "appliedenergistics2:material",
-      "data": 47
+      "item": "ae2:annihilation_core"
     },
     "M": {
-      "item": "appliedenergistics2:material",
-      "data": 52
+      "item": "ae2:blank_pattern"
     },
     "Z": {
-      "item": "appliedenergistics2:material",
-      "data": 35
+      "item": "ae2:cell_component_1k"
     },
     "P": {
-      "item": "appliedenergistics2:quartz_glass"
+      "item": "ae2:quartz_glass"
     }
   },
   "result": {
