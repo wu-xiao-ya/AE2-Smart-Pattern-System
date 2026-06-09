@@ -137,7 +137,7 @@ public class SmartPatternDetails {
     }
 
     public boolean isCraftable() {
-        return false; // MMCE provider uses processing-pattern semantics.
+        return false; // AE2S provider uses processing-pattern semantics.
     }
     public ItemStack getOutput(InventoryCrafting inventory, World world) {
         if (outputOreNames.isEmpty()) {
