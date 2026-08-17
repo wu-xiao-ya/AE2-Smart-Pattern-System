@@ -1,77 +1,60 @@
-# Forge 1.20.1 路线 / Forge 1.20.1 Track
+# AE2 Smart Pattern System - Forge 1.20.1
 
-当前状态：可编译、可打开基础编辑器 GUI、可保存基础样板数据，且已接入 AE2 官方 API 解码器。  
-Current status: compilable, basic editor GUI opens, pattern data persists, and AE2 official API decoder is integrated.
+This track targets Minecraft 1.20.1 on Forge and keeps the runtime namespace
+`sampleintegration` for compatibility with the existing assets and metadata.
 
-## 已完成 / Done
+## Current Status
 
-- [x] 模组引导与元数据。 / Mod bootstrap and metadata.
-- [x] 物品与方块注册。 / Item and block registration.
-- [x] 方块实体（18 槽）迁移。 / Block entity migration (18 slots).
-- [x] 菜单与界面迁移（基础版）。 / Menu and screen migration (basic).
-- [x] 样板 NBT 回写（打开读入、关闭写回）。 / Pattern NBT round-trip (load on open, save on close).
-- [x] 基础 Tooltip 与本地化。 / Basic tooltip and localization.
-- [x] 基础资源（model/blockstate/loot/recipes）。 / Basic assets (model/blockstate/loot/recipes).
-- [x] AE2 软依赖接入（15.4.10）与解码器注册。 / AE2 soft integration (15.4.10) and decoder registration.
-- [ ] AE2 自动下单执行链深度迁移。 / Deep migration of AE2 crafting execution chain.
-- [ ] 黑白名单模式与流体/气体标记迁移。 / Filter mode and fluid/gas marker migration.
+- The mod bootstrap, item and block registration, pattern editor menu, basic
+  editor screen, pattern NBT persistence, tooltip, and localization are
+  implemented.
+- The Forge 1.20.1 build includes the shared core model and its JUnit 5 tests.
+- AE2 official API decoding is integrated as a soft dependency.
+- Fluid and gas marker data, item markers, wildcard expansion, and recipe-level
+  filter entries are supported.
+- AE2 crafting execution-chain migration is still outside this track.
 
-## 构建命令 / Build Commands
+## Mod Filters
 
-推荐使用本地脚本（已固定 Java 17 路径）：  
-Use the local script (Java 17 path is pinned):
+Each encoded pattern stores independent input and output mod filter rules.
+Every side has its own mode:
+
+- `WHITELIST`: only listed mod namespaces are allowed.
+- `BLACKLIST`: listed mod namespaces are blocked.
+
+The mod filter screen provides separate input and output mode buttons in the
+sidebar. Left-click toggles the input list and right-click toggles the output
+list. Row markers, tooltips, and blocked counts reflect the effective rule,
+including whitelist behavior.
+
+Canonical pattern keys are:
+
+- `TechStartInputModFilterMode`
+- `TechStartOutputModFilterMode`
+- `TechStartInputModFilterIds`
+- `TechStartOutputModFilterIds`
+
+Older `ExcludedInputModIds` and `ExcludedOutputModIds` lists are read as
+blacklists when canonical IDs are absent. Saving always writes canonical mode
+data, removes legacy keys, and limits each side to 512 normalized IDs of at
+most 64 characters.
+
+Recipe-level filter entries remain a second, independent filter layer after
+mod namespace filtering.
+
+## Build
+
+Run from this directory:
 
 ```bat
-cd migration\forge-1.20.1
-build-dev.bat build --console=plain
+gradlew.bat test build --no-daemon --console=plain
 ```
 
-启动客户端：  
-Run client:
+For a development client:
 
 ```bat
-cd migration\forge-1.20.1
 build-dev.bat runClient --console=plain
 ```
 
-Safe dev run (temporarily disables incompatible AE2/GuideME/JEI jars in `run/mods` and restores them after run):
-
-```bat
-cd migration\forge-1.20.1
-run-dev-safe.bat runClient --no-daemon
-```
-
-```bat
-cd migration\forge-1.20.1
-run-dev-safe.bat runServer --no-daemon
-```
-
-鏃ュ父寮€鍙戞祴璇曢粯璁や笉鍔犺浇 AE2 杩愯鏃讹紙閬垮厤宸叉柟 AE2 + Forge dev Mixin 鍐茬獊锛夈€? 
-Default dev run does not load AE2 runtime jars to avoid AE2 + Forge-dev mixin conflicts.
-
-濡傞渶鍚敤 AE2 杩愯鏃讹紝鍙樉寮忎紶鍏ュ弬鏁帮細  
-To enable AE2 runtime explicitly:
-
-```bat
-cd migration\forge-1.20.1
-build-dev.bat -PenableAe2Runtime=true runClient --console=plain
-```
-
-## Progress Note
-
-- Added JEI ghost ingredient support for `PatternEditorScreen` (drag ingredient into pattern slots).
-- Added server sync packet for marker placement to keep client/server slots consistent.
-- Kept `sampleintegration` as the runtime-compatible `modid` and resource namespace while migrating the codebase and branding to AE2 Smart Pattern System.
-- Added runtime filter application in the AE2SPS pattern decode path (whitelist/blacklist now affects decoded inputs/outputs).
-- Added item-marker decode cleanup so legacy `TechStartItemMarker` tags are stripped before creating AE2 item keys.
-- Added offhand/main inventory sync reinforcement after saving pattern NBT in editor menu.
-- Added `run-dev-safe.bat` to automate temporary runtime-jar disable/restore for dev launch stability.
-
-## AE2 对齐说明 / AE2 Alignment Notes
-
-- 依赖源使用 AE2 官方文档给出的坐标体系与仓库。  
-  Dependency coordinates/repository follow AE2 official documentation.
-- 当前接入版本：`appeng:appliedenergistics2-forge:15.4.10`（软依赖）。  
-  Current integrated version: `appeng:appliedenergistics2-forge:15.4.10` (soft dependency).
-- 已实现 `IPatternDetailsDecoder` + `IPatternDetails`，让 Pattern Provider 可识别 AE2SPS 样板。  
-  Implemented `IPatternDetailsDecoder` + `IPatternDetails` so Pattern Provider can decode AE2SPS patterns.
+The optional AE2 runtime is controlled by the existing
+`enableAe2Runtime` Gradle property.

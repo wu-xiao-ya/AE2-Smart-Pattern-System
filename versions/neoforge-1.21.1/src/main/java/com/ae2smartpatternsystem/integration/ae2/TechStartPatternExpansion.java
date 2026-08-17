@@ -3,7 +3,10 @@ package com.ae2smartpatternsystem.integration.ae2;
 import appeng.api.crafting.IPatternDetails;
 import appeng.api.stacks.AEItemKey;
 import com.ae2smartpatternsystem.core.PatternDefinitionBridge;
+import com.ae2smartpatternsystem.core.codec.PatternNbtKeys;
 import com.ae2smartpatternsystem.core.model.EntryKind;
+import com.ae2smartpatternsystem.core.model.FilterMode;
+import com.ae2smartpatternsystem.core.model.ModFilterRule;
 import com.ae2smartpatternsystem.core.model.PatternDefinition;
 import com.ae2smartpatternsystem.core.model.PatternEntry;
 import com.ae2smartpatternsystem.core.model.WildcardRecipe;
@@ -39,14 +42,14 @@ public final class TechStartPatternExpansion {
     private static final String TAG_FILTER_MODE = "TechStartFilterMode";
     private static final String TAG_FILTER_MODE_LEGACY = "FilterMode";
     private static final String TAG_FILTER_ENTRIES = "FilterEntries";
-    private static final String TAG_EXCLUDED_INPUT_MOD_IDS = "ExcludedInputModIds";
-    private static final String TAG_EXCLUDED_OUTPUT_MOD_IDS = "ExcludedOutputModIds";
     private static final String TAG_VIRTUAL_INPUT_STACKS = "VirtualInputStacks";
     private static final String TAG_VIRTUAL_OUTPUT_STACKS = "VirtualOutputStacks";
     private static final String TAG_VIRTUAL_DISPLAY_NAME = "VirtualDisplayName";
     private static final String TAG_VIRTUAL_FILTER_ENTRY_ID = "VirtualFilterEntryId";
     private static final String TAG_ITEM_MARKER = "TechStartItemMarker";
     private static final String TAG_ITEM_AMOUNT = "TechStartItemAmount";
+    private static final int MAX_MOD_FILTER_IDS = 512;
+    private static final int MAX_MOD_FILTER_ID_LENGTH = 64;
     private static final WildcardRecipeResolver WILDCARD_RESOLVER = new WildcardRecipeResolver(WildcardRuleConfig.defaults());
     private static final Map<String, String> TAG_PREFIXES = Map.ofEntries(
             Map.entry("ingots", "ingot"),
@@ -414,21 +417,36 @@ public final class TechStartPatternExpansion {
             return true;
         }
         ResourceLocation key = BuiltInRegistries.ITEM.getKey(stack.getItem());
-        if (key == null || key.getNamespace().isBlank()) {
-            return true;
+        String namespace = key == null ? "" : key.getNamespace();
+        return readModFilterRule(tag, input).allows(namespace);
+    }
+
+    private static ModFilterRule readModFilterRule(CompoundTag tag, boolean input) {
+        String modeKey = input ? PatternNbtKeys.TAG_INPUT_MOD_FILTER_MODE : PatternNbtKeys.TAG_OUTPUT_MOD_FILTER_MODE;
+        String idsKey = input ? PatternNbtKeys.TAG_INPUT_MOD_FILTER_IDS : PatternNbtKeys.TAG_OUTPUT_MOD_FILTER_IDS;
+        String legacyKey = input ? PatternNbtKeys.TAG_EXCLUDED_INPUT_MOD_IDS : PatternNbtKeys.TAG_EXCLUDED_OUTPUT_MOD_IDS;
+        boolean canonicalIdsPresent = tag.contains(idsKey, Tag.TAG_LIST);
+        Integer serializedMode = tag.contains(modeKey, Tag.TAG_INT) ? tag.getInt(modeKey) : null;
+        return ModFilterRule.fromStoredData(
+                serializedMode,
+                canonicalIdsPresent,
+                readModFilterIds(tag, idsKey),
+                readModFilterIds(tag, legacyKey));
+    }
+
+    private static List<String> readModFilterIds(CompoundTag tag, String key) {
+        if (!tag.contains(key, Tag.TAG_LIST)) {
+            return List.of();
         }
-        ListTag excluded = tag.getList(input ? TAG_EXCLUDED_INPUT_MOD_IDS : TAG_EXCLUDED_OUTPUT_MOD_IDS, Tag.TAG_STRING);
-        if (excluded.isEmpty()) {
-            return true;
-        }
-        String namespace = key.getNamespace().toLowerCase(java.util.Locale.ROOT);
-        for (int i = 0; i < excluded.size(); i++) {
-            String blocked = excluded.getString(i);
-            if (blocked != null && namespace.equals(blocked.trim().toLowerCase(java.util.Locale.ROOT))) {
-                return false;
+        ListTag ids = tag.getList(key, Tag.TAG_STRING);
+        Set<String> values = new LinkedHashSet<>();
+        for (int i = 0; i < ids.size() && values.size() < MAX_MOD_FILTER_IDS; i++) {
+            String normalized = ModFilterRule.normalizeModId(ids.getString(i));
+            if (!normalized.isBlank() && normalized.length() <= MAX_MOD_FILTER_ID_LENGTH) {
+                values.add(normalized);
             }
         }
-        return true;
+        return new ArrayList<>(values);
     }
 
     private static String getRegistryNamespace(ItemStack stack) {

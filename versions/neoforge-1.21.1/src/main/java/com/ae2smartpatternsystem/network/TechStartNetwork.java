@@ -6,7 +6,7 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
 public final class TechStartNetwork {
-    private static final String PROTOCOL_VERSION = "1";
+    private static final String PROTOCOL_VERSION = "2";
 
     private TechStartNetwork() {
     }

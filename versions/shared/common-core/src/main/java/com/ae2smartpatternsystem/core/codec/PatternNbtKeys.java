@@ -36,6 +36,13 @@ public final class PatternNbtKeys {
     public static final String TAG_FILTER_MODE_LEGACY = "FilterMode";
     public static final String TAG_FILTER_ENTRIES = "FilterEntries";
 
+    public static final String TAG_INPUT_MOD_FILTER_MODE = "TechStartInputModFilterMode";
+    public static final String TAG_OUTPUT_MOD_FILTER_MODE = "TechStartOutputModFilterMode";
+    public static final String TAG_INPUT_MOD_FILTER_IDS = "TechStartInputModFilterIds";
+    public static final String TAG_OUTPUT_MOD_FILTER_IDS = "TechStartOutputModFilterIds";
+    public static final String TAG_EXCLUDED_INPUT_MOD_IDS = "ExcludedInputModIds";
+    public static final String TAG_EXCLUDED_OUTPUT_MOD_IDS = "ExcludedOutputModIds";
+
     private PatternNbtKeys() {
     }
 }
