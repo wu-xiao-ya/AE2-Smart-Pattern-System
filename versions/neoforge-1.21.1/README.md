@@ -1,27 +1,40 @@
+# AE2SPS Smart Pattern System - NeoForge 1.21.1
 
-Installation information
-=======
+This version targets Minecraft 1.21.1 on NeoForge 21.1.x and integrates with
+Applied Energistics 2.
 
-This template repository can be directly cloned to get you started with a new
-mod. Simply create a new repository cloned from this one, by following the
-instructions at [github](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template).
+## Mod filters
 
-Once you have your clone, simply open the repository in the IDE of your choice. The usual recommendation for an IDE is either IntelliJ IDEA or Eclipse.
+Each smart pattern stores independent input and output mod rules:
 
-> **Note**: For Eclipse, use tasks in `Launch Group` instead of ones founds in `Java Application`. A preparation task must run before launching the game. NeoGradle uses launch groups to do these subsequently.
+- `Whitelist`: only listed mod IDs are allowed.
+- `Blacklist`: listed mod IDs are blocked and unlisted IDs are allowed.
+- Left-click a mod row to edit the input set.
+- Right-click a mod row to edit the output set.
+- The `I` and `O` mode buttons switch the corresponding rule.
 
-If at any point you are missing libraries in your IDE, or you've run into problems you can
-run `gradlew --refresh-dependencies` to refresh the local cache. `gradlew clean` to reset everything 
-{this does not affect your code} and then start the process again.
+Mod IDs are normalized to lowercase namespace IDs. The server accepts at most
+512 IDs per side and 64 characters per ID.
 
-Mapping Names:
-============
-By default, the MDK is configured to use the official mapping names from Mojang for methods and fields 
-in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this
-license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+The canonical NBT keys are:
 
-Additional Resources: 
-==========
-Community Documentation: https://docs.neoforged.net/  
-NeoForged Discord: https://discord.neoforged.net/
+- `TechStartInputModFilterMode`
+- `TechStartOutputModFilterMode`
+- `TechStartInputModFilterIds`
+- `TechStartOutputModFilterIds`
+
+Patterns using `ExcludedInputModIds` or `ExcludedOutputModIds` are migrated as
+blacklists when loaded. Saving writes the canonical keys and removes the legacy
+keys.
+
+The recipe `FilterEntries` list remains a separate second-stage recipe filter.
+
+## Development
+
+Run from this directory:
+
+```text
+gradlew.bat test build --no-daemon --console=plain
+```
+
+The build includes the shared common-core main sources and its JUnit 5 tests.

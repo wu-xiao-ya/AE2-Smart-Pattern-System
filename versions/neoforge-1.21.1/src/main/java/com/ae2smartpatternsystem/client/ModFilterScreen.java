@@ -3,6 +3,7 @@ package com.ae2smartpatternsystem.client;
 import com.ae2smartpatternsystem.menu.PatternEditorMenu;
 import com.ae2smartpatternsystem.network.SetPatternModFiltersPayload;
 import com.ae2smartpatternsystem.network.TechStartNetwork;
+import com.ae2smartpatternsystem.core.model.ModFilterRule;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -44,6 +45,8 @@ public class ModFilterScreen extends Screen {
     private static final int MODE_BUTTON_Y = 48;
     private static final int SEARCH_BUTTON_Y = 72;
     private static final int MOD_FILTER_BUTTON_Y = 96;
+    private static final int INPUT_MODE_BUTTON_Y = 120;
+    private static final int OUTPUT_MODE_BUTTON_Y = 144;
     private static final int GUI_WIDTH = SIDE_BUTTON_X + SIDE_BUTTON_WIDTH;
     private static final int GUI_HEIGHT = PANEL_HEIGHT;
     private static final int LIST_X = 16;
@@ -59,10 +62,12 @@ public class ModFilterScreen extends Screen {
     private final PatternEditorMenu menu;
     private final List<ModEntry> allEntries = new ArrayList<>();
     private final List<ModEntry> filteredEntries = new ArrayList<>();
-    private final LinkedHashSet<String> excludedInputMods = new LinkedHashSet<>();
-    private final LinkedHashSet<String> excludedOutputMods = new LinkedHashSet<>();
+    private final LinkedHashSet<String> inputModIds = new LinkedHashSet<>();
+    private final LinkedHashSet<String> outputModIds = new LinkedHashSet<>();
 
     private EditBox searchField;
+    private InvisibleButton inputModeButton;
+    private InvisibleButton outputModeButton;
     private int leftPos;
     private int topPos;
     private int listScroll = 0;
@@ -80,10 +85,10 @@ public class ModFilterScreen extends Screen {
         this.leftPos = (this.width - GUI_WIDTH) / 2;
         this.topPos = (this.height - GUI_HEIGHT) / 2;
 
-        this.excludedInputMods.clear();
-        this.excludedInputMods.addAll(this.menu.getExcludedInputModIdsSnapshot());
-        this.excludedOutputMods.clear();
-        this.excludedOutputMods.addAll(this.menu.getExcludedOutputModIdsSnapshot());
+        this.inputModIds.clear();
+        this.inputModIds.addAll(this.menu.getInputModFilterIdsSnapshot());
+        this.outputModIds.clear();
+        this.outputModIds.addAll(this.menu.getOutputModFilterIdsSnapshot());
 
         this.searchField = new EditBox(this.font, this.leftPos + 38, this.topPos + 25, 136, 12, Component.empty());
         this.searchField.setCanLoseFocus(false);
@@ -101,12 +106,18 @@ public class ModFilterScreen extends Screen {
         addSideButton(MODE_BUTTON_Y, MODE_BUTTON_U, MODE_BUTTON_V, "mode", Component.translatable("gui.ae2sps.toggle_filter_mode"), ignored -> toggleFilterMode());
         addSideButton(SEARCH_BUTTON_Y, SEARCH_BUTTON_U, SEARCH_BUTTON_V, "search", Component.translatable("gui.ae2sps.open_search"), ignored -> openSearch());
         addSideButton(MOD_FILTER_BUTTON_Y, MOD_FILTER_BUTTON_U, MOD_FILTER_BUTTON_V, "mod", Component.translatable("gui.ae2sps.open_mod_filter"), ignored -> focusSearch());
+        this.inputModeButton = addSideButton(
+                INPUT_MODE_BUTTON_Y, MODE_BUTTON_U, MODE_BUTTON_V, "input_mode",
+                modeHint(true), ignored -> toggleModFilterMode(true));
+        this.outputModeButton = addSideButton(
+                OUTPUT_MODE_BUTTON_Y, MODE_BUTTON_U, MODE_BUTTON_V, "output_mode",
+                modeHint(false), ignored -> toggleModFilterMode(false));
 
         reloadEntries();
         applyFilter();
     }
 
-    private void addSideButton(int y, int u, int v, String id, Component hint, InvisibleButton.OnPress onPress) {
+    private InvisibleButton addSideButton(int y, int u, int v, String id, Component hint, InvisibleButton.OnPress onPress) {
         InvisibleButton button = this.addRenderableWidget(new InvisibleButton(
                 this.leftPos + SIDE_BUTTON_X,
                 this.topPos + y,
@@ -117,6 +128,7 @@ public class ModFilterScreen extends Screen {
                 onPress
         ));
         button.setSprite(u, v, v, ATLAS_WIDTH, ATLAS_HEIGHT);
+        return button;
     }
 
     private void toggleFilterMode() {
@@ -127,6 +139,29 @@ public class ModFilterScreen extends Screen {
                     : PatternEditorMenu.FILTER_MODE_WHITELIST;
             this.minecraft.gameMode.handleInventoryButtonClick(this.menu.containerId, next);
         }
+    }
+
+    private void toggleModFilterMode(boolean input) {
+        if (this.minecraft != null && this.minecraft.gameMode != null) {
+            this.minecraft.gameMode.handleInventoryButtonClick(
+                    this.menu.containerId,
+                    input ? PatternEditorMenu.BUTTON_INPUT_MOD_FILTER_MODE : PatternEditorMenu.BUTTON_OUTPUT_MOD_FILTER_MODE);
+        }
+    }
+
+    private Component modeShort(int mode) {
+        return Component.translatable(mode == PatternEditorMenu.FILTER_MODE_WHITELIST
+                ? "gui.ae2sps.mod_filter.mode_short.whitelist"
+                : "gui.ae2sps.mod_filter.mode_short.blacklist");
+    }
+
+    private Component modeHint(boolean input) {
+        return Component.translatable(
+                input ? "gui.ae2sps.mod_filter.input_mode" : "gui.ae2sps.mod_filter.output_mode",
+                Component.translatable((input ? this.menu.getInputModFilterMode() : this.menu.getOutputModFilterMode())
+                        == PatternEditorMenu.FILTER_MODE_WHITELIST
+                        ? "gui.ae2sps.mode.whitelist"
+                        : "gui.ae2sps.mode.blacklist"));
     }
 
     private void openSearch() {
@@ -216,16 +251,28 @@ public class ModFilterScreen extends Screen {
         guiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, PANEL_WIDTH, PANEL_HEIGHT, ATLAS_WIDTH, ATLAS_HEIGHT);
 
         guiGraphics.drawString(this.font, this.title, this.leftPos + 16, this.topPos + 16, 0x404040, false);
+        ModFilterRule inputRule = this.menu.getInputModFilterRule();
+        ModFilterRule outputRule = this.menu.getOutputModFilterRule();
         Component stat = Component.translatable(
                 "gui.ae2sps.mod_filter.stats",
-                this.excludedInputMods.size(),
-                this.excludedOutputMods.size(),
+                modeShort(this.menu.getInputModFilterMode()),
+                this.inputModIds.size(),
+                modeShort(this.menu.getOutputModFilterMode()),
+                this.outputModIds.size(),
                 this.allEntries.size());
         guiGraphics.drawString(this.font, stat, this.leftPos + 16, this.topPos + 45, 0x666666, false);
 
         drawEntryRows(guiGraphics, mouseX, mouseY);
         drawScrollBar(guiGraphics);
+        if (this.inputModeButton != null) {
+            this.inputModeButton.setHint(modeHint(true));
+        }
+        if (this.outputModeButton != null) {
+            this.outputModeButton.setHint(modeHint(false));
+        }
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+        guiGraphics.drawString(this.font, "I", this.leftPos + SIDE_BUTTON_X + 8, this.topPos + INPUT_MODE_BUTTON_Y + 8, 0x404040, false);
+        guiGraphics.drawString(this.font, "O", this.leftPos + SIDE_BUTTON_X + 8, this.topPos + OUTPUT_MODE_BUTTON_Y + 8, 0x404040, false);
 
         ModEntry hovered = getEntryAt(mouseX, mouseY);
         if (hovered != null) {
@@ -233,12 +280,12 @@ public class ModFilterScreen extends Screen {
             tooltip.add(Component.literal(hovered.modId() + " - " + hovered.name()));
             tooltip.add(Component.translatable("gui.ae2sps.mod_filter.tooltip.left"));
             tooltip.add(Component.translatable("gui.ae2sps.mod_filter.tooltip.right"));
-            Component inputState = Component.translatable(this.excludedInputMods.contains(hovered.modId())
-                    ? "gui.ae2sps.mod_filter.state.excluded"
-                    : "gui.ae2sps.mod_filter.state.allowed");
-            Component outputState = Component.translatable(this.excludedOutputMods.contains(hovered.modId())
-                    ? "gui.ae2sps.mod_filter.state.excluded"
-                    : "gui.ae2sps.mod_filter.state.allowed");
+            Component inputState = Component.translatable(inputRule.allows(hovered.modId())
+                    ? "gui.ae2sps.mod_filter.state.allowed"
+                    : "gui.ae2sps.mod_filter.state.excluded");
+            Component outputState = Component.translatable(outputRule.allows(hovered.modId())
+                    ? "gui.ae2sps.mod_filter.state.allowed"
+                    : "gui.ae2sps.mod_filter.state.excluded");
             tooltip.add(Component.translatable("gui.ae2sps.mod_filter.tooltip.state", inputState, outputState));
             guiGraphics.renderTooltip(this.font, tooltip.stream().map(Component::getVisualOrderText).toList(), mouseX, mouseY);
             return;
@@ -283,24 +330,26 @@ public class ModFilterScreen extends Screen {
     }
 
     private void toggleInput(String modId) {
-        if (!this.excludedInputMods.add(modId)) {
-            this.excludedInputMods.remove(modId);
+        if (!this.inputModIds.add(modId)) {
+            this.inputModIds.remove(modId);
         }
-        syncExcludedMods();
+        syncModFilters();
     }
 
     private void toggleOutput(String modId) {
-        if (!this.excludedOutputMods.add(modId)) {
-            this.excludedOutputMods.remove(modId);
+        if (!this.outputModIds.add(modId)) {
+            this.outputModIds.remove(modId);
         }
-        syncExcludedMods();
+        syncModFilters();
     }
 
-    private void syncExcludedMods() {
-        List<String> inputValues = new ArrayList<>(this.excludedInputMods);
-        List<String> outputValues = new ArrayList<>(this.excludedOutputMods);
-        this.menu.applyExcludedModFilters(inputValues.toArray(new String[0]), outputValues.toArray(new String[0]));
-        TechStartNetwork.sendToServer(new SetPatternModFiltersPayload(inputValues, outputValues));
+    private void syncModFilters() {
+        List<String> inputValues = new ArrayList<>(this.inputModIds);
+        List<String> outputValues = new ArrayList<>(this.outputModIds);
+        int inputMode = this.menu.getInputModFilterMode();
+        int outputMode = this.menu.getOutputModFilterMode();
+        this.menu.applyModFilters(inputMode, inputValues, outputMode, outputValues);
+        TechStartNetwork.sendToServer(new SetPatternModFiltersPayload(inputMode, inputValues, outputMode, outputValues));
     }
 
 
@@ -316,23 +365,33 @@ public class ModFilterScreen extends Screen {
             int rowY = top + row * ROW_HEIGHT;
             boolean hovered = mouseX >= left && mouseX < left + LIST_WIDTH && mouseY >= rowY && mouseY < rowY + ROW_HEIGHT;
 
-            boolean inputExcluded = this.excludedInputMods.contains(entry.modId());
-            boolean outputExcluded = this.excludedOutputMods.contains(entry.modId());
-            if (inputExcluded && outputExcluded) {
+            boolean inputAllowed = this.menu.getInputModFilterRule().allows(entry.modId());
+            boolean outputAllowed = this.menu.getOutputModFilterRule().allows(entry.modId());
+            if (!inputAllowed && !outputAllowed) {
                 guiGraphics.fill(left, rowY, left + LIST_WIDTH, rowY + ROW_HEIGHT, 0x446633CC);
-            } else if (inputExcluded) {
+            } else if (!inputAllowed) {
                 guiGraphics.fill(left, rowY, left + LIST_WIDTH, rowY + ROW_HEIGHT, 0x44CC3333);
-            } else if (outputExcluded) {
+            } else if (!outputAllowed) {
                 guiGraphics.fill(left, rowY, left + LIST_WIDTH, rowY + ROW_HEIGHT, 0x443366CC);
             }
             if (hovered) {
                 guiGraphics.fill(left, rowY, left + LIST_WIDTH, rowY + ROW_HEIGHT, 0x33FFFFFF);
             }
 
-            String marker = (inputExcluded ? "I" : "-") + "/" + (outputExcluded ? "O" : "-");
+            String marker = "I" + (inputAllowed ? "+" : "-") + "/O" + (outputAllowed ? "+" : "-");
             String line = this.font.plainSubstrByWidth(marker + " " + entry.modId() + " - " + entry.name(), LIST_WIDTH - 4);
             guiGraphics.drawString(this.font, line, left + 2, rowY + 4, 0x404040, false);
         }
+    }
+
+    private int countDisallowed(ModFilterRule rule) {
+        int blocked = 0;
+        for (ModEntry entry : this.allEntries) {
+            if (!rule.allows(entry.modId())) {
+                blocked++;
+            }
+        }
+        return blocked;
     }
 
     private void drawScrollBar(GuiGraphics guiGraphics) {
@@ -425,7 +484,7 @@ public class ModFilterScreen extends Screen {
     }
 
     private static String normalizeModId(String modId) {
-        return modId == null ? "" : modId.trim().toLowerCase(Locale.ROOT);
+        return ModFilterRule.normalizeModId(modId);
     }
 
     private record ModEntry(String modId, String name) {

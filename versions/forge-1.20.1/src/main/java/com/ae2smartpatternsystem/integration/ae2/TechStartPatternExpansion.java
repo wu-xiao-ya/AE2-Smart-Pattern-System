@@ -3,9 +3,11 @@ package com.ae2smartpatternsystem.integration.ae2;
 import appeng.api.crafting.IPatternDetails;
 import appeng.api.stacks.AEItemKey;
 import com.ae2smartpatternsystem.core.PatternDefinitionBridge;
+import com.ae2smartpatternsystem.core.codec.PatternNbtKeys;
 import com.ae2smartpatternsystem.core.model.EntryKind;
 import com.ae2smartpatternsystem.core.model.FilterEntry;
 import com.ae2smartpatternsystem.core.model.FilterMode;
+import com.ae2smartpatternsystem.core.model.ModFilterRule;
 import com.ae2smartpatternsystem.core.model.PatternDefinition;
 import com.ae2smartpatternsystem.core.model.PatternEntry;
 import com.ae2smartpatternsystem.core.model.WildcardRecipe;
@@ -40,8 +42,6 @@ public final class TechStartPatternExpansion {
     private static final String TAG_FILTER_MODE = "TechStartFilterMode";
     private static final String TAG_FILTER_ENTRIES = "FilterEntries";
     private static final String TAG_FILTER_MODE_LEGACY = "FilterMode";
-    private static final String TAG_EXCLUDED_INPUT_MOD_IDS = "ExcludedInputModIds";
-    private static final String TAG_EXCLUDED_OUTPUT_MOD_IDS = "ExcludedOutputModIds";
     private static final String TAG_VIRTUAL_INPUT_STACKS = "VirtualInputStacks";
     private static final String TAG_VIRTUAL_OUTPUT_STACKS = "VirtualOutputStacks";
     private static final String TAG_VIRTUAL_DISPLAY_NAME = "VirtualDisplayName";
@@ -412,21 +412,37 @@ public final class TechStartPatternExpansion {
             return true;
         }
         ResourceLocation key = BuiltInRegistries.ITEM.getKey(stack.getItem());
-        if (key == null || key.getNamespace().isBlank()) {
-            return true;
-        }
-        ListTag excluded = tag.getList(input ? TAG_EXCLUDED_INPUT_MOD_IDS : TAG_EXCLUDED_OUTPUT_MOD_IDS, Tag.TAG_STRING);
-        if (excluded.isEmpty()) {
-            return true;
-        }
-        String namespace = key.getNamespace().toLowerCase(java.util.Locale.ROOT);
-        for (int i = 0; i < excluded.size(); i++) {
-            String blocked = excluded.getString(i);
-            if (blocked != null && namespace.equals(blocked.trim().toLowerCase(java.util.Locale.ROOT))) {
-                return false;
+        String namespace = key == null ? "" : key.getNamespace();
+        return readModFilterRule(tag, input).allows(namespace);
+    }
+
+    private static ModFilterRule readModFilterRule(CompoundTag tag, boolean input) {
+        String modeKey = input
+                ? PatternNbtKeys.TAG_INPUT_MOD_FILTER_MODE
+                : PatternNbtKeys.TAG_OUTPUT_MOD_FILTER_MODE;
+        String idsKey = input
+                ? PatternNbtKeys.TAG_INPUT_MOD_FILTER_IDS
+                : PatternNbtKeys.TAG_OUTPUT_MOD_FILTER_IDS;
+        String legacyKey = input
+                ? PatternNbtKeys.TAG_EXCLUDED_INPUT_MOD_IDS
+                : PatternNbtKeys.TAG_EXCLUDED_OUTPUT_MOD_IDS;
+
+        boolean canonicalIdsPresent = tag.contains(idsKey, Tag.TAG_LIST);
+        String sourceKey = canonicalIdsPresent ? idsKey : legacyKey;
+        ListTag ids = tag.getList(sourceKey, Tag.TAG_STRING);
+        List<String> normalized = new ArrayList<>(Math.min(ids.size(), 512));
+        for (int i = 0; i < ids.size() && normalized.size() < 512; i++) {
+            String id = ModFilterRule.normalizeModId(ids.getString(i));
+            if (id.length() <= 64 && !id.isBlank()) {
+                normalized.add(id);
             }
         }
-        return true;
+        Integer serializedMode = tag.contains(modeKey, Tag.TAG_INT) ? tag.getInt(modeKey) : null;
+        return ModFilterRule.fromStoredData(
+                serializedMode,
+                canonicalIdsPresent,
+                canonicalIdsPresent ? normalized : List.of(),
+                canonicalIdsPresent ? List.of() : normalized);
     }
 
     private static String getRegistryNamespace(ItemStack stack) {
@@ -556,4 +572,3 @@ public final class TechStartPatternExpansion {
     private record ScoredOutputCandidate(ItemStack stack, int score, int order) {
     }
 }
-

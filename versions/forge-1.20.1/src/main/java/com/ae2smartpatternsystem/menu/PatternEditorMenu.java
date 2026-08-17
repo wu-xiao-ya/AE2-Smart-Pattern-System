@@ -1,6 +1,9 @@
 package com.ae2smartpatternsystem.menu;
 
 import com.ae2smartpatternsystem.config.TechStartConfig;
+import com.ae2smartpatternsystem.core.codec.PatternNbtKeys;
+import com.ae2smartpatternsystem.core.model.FilterMode;
+import com.ae2smartpatternsystem.core.model.ModFilterRule;
 import com.ae2smartpatternsystem.integration.ae2.TechStartPatternExpansion;
 import com.ae2smartpatternsystem.integration.mekanism.MekanismGasHelper;
 import com.ae2smartpatternsystem.registry.TechStartItems;
@@ -43,6 +46,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -74,8 +78,6 @@ public class PatternEditorMenu extends AbstractContainerMenu {
     private static final String TAG_INPUT_GAS_AMOUNTS = "InputGasAmounts";
     private static final String TAG_OUTPUT_GASES = "OutputGases";
     private static final String TAG_OUTPUT_GAS_AMOUNTS = "OutputGasAmounts";
-    private static final String TAG_EXCLUDED_INPUT_MOD_IDS = "ExcludedInputModIds";
-    private static final String TAG_EXCLUDED_OUTPUT_MOD_IDS = "ExcludedOutputModIds";
     private static final String TAG_INPUT_ORES = "InputOreNames";
     private static final String TAG_OUTPUT_ORES = "OutputOreNames";
     private static final String TAG_INPUT_COUNTS = "InputCounts";
@@ -94,16 +96,20 @@ public class PatternEditorMenu extends AbstractContainerMenu {
 
     public static final int FILTER_MODE_WHITELIST = 0;
     public static final int FILTER_MODE_BLACKLIST = 1;
+    public static final int INPUT_MOD_FILTER_MODE_BUTTON = 2;
+    public static final int OUTPUT_MOD_FILTER_MODE_BUTTON = 3;
+    private static final int MAX_MOD_FILTER_IDS = 512;
+    private static final int MAX_MOD_FILTER_ID_LENGTH = 64;
 
     private final ItemStackHandler itemHandler;
     private final ContainerLevelAccess access;
     private final Player player;
     private final @Nullable InteractionHand boundPatternHand;
     private final ItemStack boundPatternStack;
-    private final ContainerData data = new SimpleContainerData(1);
+    private final ContainerData data = new SimpleContainerData(3);
     private final LinkedHashSet<String> filterEntries = new LinkedHashSet<>();
-    private final LinkedHashSet<String> excludedInputModIds = new LinkedHashSet<>();
-    private final LinkedHashSet<String> excludedOutputModIds = new LinkedHashSet<>();
+    private final LinkedHashSet<String> inputModFilterIds = new LinkedHashSet<>();
+    private final LinkedHashSet<String> outputModFilterIds = new LinkedHashSet<>();
 
     public static class PatternSlot extends SlotItemHandler {
         private boolean active = true;
@@ -135,6 +141,8 @@ public class PatternEditorMenu extends AbstractContainerMenu {
         this.boundPatternStack = locateBoundPatternStack(hand);
 
         setFilterMode(FILTER_MODE_BLACKLIST);
+        setInputModFilterMode(FilterMode.BLACKLIST);
+        setOutputModFilterMode(FilterMode.BLACKLIST);
         this.addDataSlots(this.data);
 
         for (int row = 0; row < 3; row++) {
@@ -205,6 +213,16 @@ public class PatternEditorMenu extends AbstractContainerMenu {
             saveToPatternItem();
             return true;
         }
+        if (id == INPUT_MOD_FILTER_MODE_BUTTON) {
+            setInputModFilterMode(opposite(getInputModFilterMode()));
+            saveToPatternItem();
+            return true;
+        }
+        if (id == OUTPUT_MOD_FILTER_MODE_BUTTON) {
+            setOutputModFilterMode(opposite(getOutputModFilterMode()));
+            saveToPatternItem();
+            return true;
+        }
         if (id >= BUTTON_FILTER_ENTRY_BASE) {
             int entryIndex = id - BUTTON_FILTER_ENTRY_BASE;
             toggleFilterEntryByIndex(entryIndex);
@@ -226,12 +244,28 @@ public class PatternEditorMenu extends AbstractContainerMenu {
         return List.copyOf(this.filterEntries);
     }
 
-    public List<String> getExcludedInputModIdsSnapshot() {
-        return List.copyOf(this.excludedInputModIds);
+    public List<String> getInputModFilterIdsSnapshot() {
+        return List.copyOf(this.inputModFilterIds);
     }
 
-    public List<String> getExcludedOutputModIdsSnapshot() {
-        return List.copyOf(this.excludedOutputModIds);
+    public List<String> getOutputModFilterIdsSnapshot() {
+        return List.copyOf(this.outputModFilterIds);
+    }
+
+    public FilterMode getInputModFilterMode() {
+        return FilterMode.fromSerializedValue(this.data.get(1));
+    }
+
+    public FilterMode getOutputModFilterMode() {
+        return FilterMode.fromSerializedValue(this.data.get(2));
+    }
+
+    public ModFilterRule getInputModFilterRuleSnapshot() {
+        return ModFilterRule.of(getInputModFilterMode(), this.inputModFilterIds);
+    }
+
+    public ModFilterRule getOutputModFilterRuleSnapshot() {
+        return ModFilterRule.of(getOutputModFilterMode(), this.outputModFilterIds);
     }
 
     public ItemStack getPatternStackSnapshot() {
@@ -256,16 +290,23 @@ public class PatternEditorMenu extends AbstractContainerMenu {
         onPatternSlotsMutated(player);
     }
 
-    public void applyExcludedModFilters(String[] inputValues, String[] outputValues) {
-        this.excludedInputModIds.clear();
-        this.excludedInputModIds.addAll(normalizeModIds(inputValues));
-        this.excludedOutputModIds.clear();
-        this.excludedOutputModIds.addAll(normalizeModIds(outputValues));
+    public void applyModFilters(FilterMode inputMode, String[] inputValues, FilterMode outputMode, String[] outputValues) {
+        setInputModFilterMode(inputMode);
+        setOutputModFilterMode(outputMode);
+        this.inputModFilterIds.clear();
+        this.inputModFilterIds.addAll(normalizeModIds(inputValues));
+        this.outputModFilterIds.clear();
+        this.outputModFilterIds.addAll(normalizeModIds(outputValues));
         saveToPatternItem();
     }
 
-    public void applyExcludedModFiltersFromClient(String[] inputValues, String[] outputValues, Player actor) {
-        applyExcludedModFilters(inputValues, outputValues);
+    public void applyModFiltersFromClient(
+            FilterMode inputMode,
+            String[] inputValues,
+            FilterMode outputMode,
+            String[] outputValues,
+            Player actor) {
+        applyModFilters(inputMode, inputValues, outputMode, outputValues);
         if (!actor.level().isClientSide) {
             this.broadcastChanges();
         }
@@ -337,6 +378,18 @@ public class PatternEditorMenu extends AbstractContainerMenu {
         this.data.set(0, normalizeFilterMode(mode));
     }
 
+    public void setInputModFilterMode(FilterMode mode) {
+        this.data.set(1, Objects.requireNonNull(mode, "mode").serializedValue());
+    }
+
+    public void setOutputModFilterMode(FilterMode mode) {
+        this.data.set(2, Objects.requireNonNull(mode, "mode").serializedValue());
+    }
+
+    private FilterMode opposite(FilterMode mode) {
+        return mode == FilterMode.WHITELIST ? FilterMode.BLACKLIST : FilterMode.WHITELIST;
+    }
+
     private int normalizeFilterMode(int mode) {
         return mode == FILTER_MODE_WHITELIST ? FILTER_MODE_WHITELIST : FILTER_MODE_BLACKLIST;
     }
@@ -353,9 +406,11 @@ public class PatternEditorMenu extends AbstractContainerMenu {
 
     private void loadFilterStateFromPatternItem() {
         this.filterEntries.clear();
-        this.excludedInputModIds.clear();
-        this.excludedOutputModIds.clear();
+        this.inputModFilterIds.clear();
+        this.outputModFilterIds.clear();
         setFilterMode(FILTER_MODE_BLACKLIST);
+        setInputModFilterMode(FilterMode.BLACKLIST);
+        setOutputModFilterMode(FilterMode.BLACKLIST);
 
         ItemStack patternStack = resolvePatternStack();
         if (patternStack.isEmpty()) {
@@ -367,8 +422,8 @@ public class PatternEditorMenu extends AbstractContainerMenu {
         }
         setFilterMode(readFilterMode(tag));
         readFilterEntries(tag);
-        readExcludedModIds(tag, true);
-        readExcludedModIds(tag, false);
+        readModFilterState(tag, true);
+        readModFilterState(tag, false);
     }
 
     private ItemStack locateBoundPatternStack() {
@@ -527,8 +582,8 @@ public class PatternEditorMenu extends AbstractContainerMenu {
         CompoundTag tag = patternStack.getOrCreateTag();
         tag.putInt(TAG_FILTER_MODE, getFilterMode());
         tag.putBoolean(TAG_ENCODED, encoded);
-        writeExcludedModIds(tag, true);
-        writeExcludedModIds(tag, false);
+        writeModFilterState(tag, true);
+        writeModFilterState(tag, false);
 
         if (encoded) {
             tag.put(TAG_INPUTS, inputs);
@@ -579,16 +634,49 @@ public class PatternEditorMenu extends AbstractContainerMenu {
         }
     }
 
-    private void readExcludedModIds(CompoundTag tag, boolean input) {
-        String key = input ? TAG_EXCLUDED_INPUT_MOD_IDS : TAG_EXCLUDED_OUTPUT_MOD_IDS;
-        if (!tag.contains(key, Tag.TAG_LIST)) {
+    private void readModFilterState(CompoundTag tag, boolean input) {
+        String modeKey = input
+                ? PatternNbtKeys.TAG_INPUT_MOD_FILTER_MODE
+                : PatternNbtKeys.TAG_OUTPUT_MOD_FILTER_MODE;
+        String idsKey = input
+                ? PatternNbtKeys.TAG_INPUT_MOD_FILTER_IDS
+                : PatternNbtKeys.TAG_OUTPUT_MOD_FILTER_IDS;
+        String legacyKey = input
+                ? PatternNbtKeys.TAG_EXCLUDED_INPUT_MOD_IDS
+                : PatternNbtKeys.TAG_EXCLUDED_OUTPUT_MOD_IDS;
+        boolean hasCanonicalMode = tag.contains(modeKey, Tag.TAG_INT);
+        boolean hasCanonicalIds = tag.contains(idsKey, Tag.TAG_LIST);
+        LinkedHashSet<String> target = input ? this.inputModFilterIds : this.outputModFilterIds;
+        if (hasCanonicalMode || hasCanonicalIds) {
+            FilterMode mode = hasCanonicalMode
+                    ? FilterMode.fromSerializedValue(tag.getInt(modeKey))
+                    : FilterMode.BLACKLIST;
+            if (input) {
+                setInputModFilterMode(mode);
+            } else {
+                setOutputModFilterMode(mode);
+            }
+        } else if (tag.contains(legacyKey, Tag.TAG_LIST)) {
+            if (input) {
+                setInputModFilterMode(FilterMode.BLACKLIST);
+            } else {
+                setOutputModFilterMode(FilterMode.BLACKLIST);
+            }
+        } else {
             return;
         }
-        ListTag list = tag.getList(key, Tag.TAG_STRING);
-        LinkedHashSet<String> target = input ? this.excludedInputModIds : this.excludedOutputModIds;
+
+        String sourceKey = hasCanonicalIds ? idsKey : legacyKey;
+        if (!tag.contains(sourceKey, Tag.TAG_LIST)) {
+            return;
+        }
+        ListTag list = tag.getList(sourceKey, Tag.TAG_STRING);
         for (int i = 0; i < list.size(); i++) {
+            if (target.size() >= MAX_MOD_FILTER_IDS) {
+                break;
+            }
             String value = normalizeModId(list.getString(i));
-            if (!value.isBlank()) {
+            if (value.length() <= MAX_MOD_FILTER_ID_LENGTH && !value.isBlank()) {
                 target.add(value);
             }
         }
@@ -613,24 +701,31 @@ public class PatternEditorMenu extends AbstractContainerMenu {
         }
     }
 
-    private void writeExcludedModIds(CompoundTag tag, boolean input) {
-        LinkedHashSet<String> source = input ? this.excludedInputModIds : this.excludedOutputModIds;
-        String key = input ? TAG_EXCLUDED_INPUT_MOD_IDS : TAG_EXCLUDED_OUTPUT_MOD_IDS;
+    private void writeModFilterState(CompoundTag tag, boolean input) {
+        LinkedHashSet<String> source = input ? this.inputModFilterIds : this.outputModFilterIds;
+        String modeKey = input
+                ? PatternNbtKeys.TAG_INPUT_MOD_FILTER_MODE
+                : PatternNbtKeys.TAG_OUTPUT_MOD_FILTER_MODE;
+        String idsKey = input
+                ? PatternNbtKeys.TAG_INPUT_MOD_FILTER_IDS
+                : PatternNbtKeys.TAG_OUTPUT_MOD_FILTER_IDS;
+        String legacyKey = input
+                ? PatternNbtKeys.TAG_EXCLUDED_INPUT_MOD_IDS
+                : PatternNbtKeys.TAG_EXCLUDED_OUTPUT_MOD_IDS;
+        tag.putInt(modeKey, input ? getInputModFilterMode().serializedValue() : getOutputModFilterMode().serializedValue());
+        tag.remove(legacyKey);
         if (source.isEmpty()) {
-            tag.remove(key);
+            tag.put(idsKey, new ListTag());
             return;
         }
         ListTag list = new ListTag();
         for (String modId : source) {
-            if (modId == null || modId.isBlank()) {
-                continue;
-            }
             list.add(StringTag.valueOf(modId));
         }
         if (list.isEmpty()) {
-            tag.remove(key);
+            tag.remove(idsKey);
         } else {
-            tag.put(key, list);
+            tag.put(idsKey, list);
         }
     }
 
@@ -733,7 +828,10 @@ public class PatternEditorMenu extends AbstractContainerMenu {
         }
         for (String value : values) {
             String modId = normalizeModId(value);
-            if (!modId.isBlank()) {
+            if (normalized.size() >= MAX_MOD_FILTER_IDS) {
+                break;
+            }
+            if (modId.length() <= MAX_MOD_FILTER_ID_LENGTH && !modId.isBlank()) {
                 normalized.add(modId);
             }
         }
@@ -741,7 +839,7 @@ public class PatternEditorMenu extends AbstractContainerMenu {
     }
 
     private static String normalizeModId(String modId) {
-        return modId == null ? "" : modId.trim().toLowerCase(Locale.ROOT);
+        return ModFilterRule.normalizeModId(modId);
     }
 
     private void applyPatternSlotCount(int slotId, int count) {
@@ -1391,5 +1489,3 @@ public class PatternEditorMenu extends AbstractContainerMenu {
         this.broadcastChanges();
     }
 }
-
-

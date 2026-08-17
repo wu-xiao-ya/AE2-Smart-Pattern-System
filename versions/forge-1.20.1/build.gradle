@@ -76,27 +76,39 @@ minecraft {
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 sourceSets.main.java { srcDir '../shared/common-core/src/main/java' }
+sourceSets.test.java { srcDir '../shared/common-core/src/test/java' }
 
 repositories {
     mavenCentral()
     maven { url = 'https://maven.minecraftforge.net' }
+    maven { url = 'https://maven.blamejared.com' }
     maven {
         name = 'Modmaven'
         url = 'https://modmaven.dev/'
         content {
             includeGroup 'appeng'
+            includeGroup 'mekanism'
+        }
+    }
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+        content {
+            includeGroup 'maven.modrinth'
         }
     }
 }
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // AE2 1.20.1 official Forge artifact (soft integration).
     compileOnly fg.deobf("appeng:appliedenergistics2-forge:${ae2_version}:api")
     compileOnly fg.deobf("appeng:appliedenergistics2-forge:${ae2_version}")
-    compileOnly files('D:/桌面/我的世界/GTL/versions/1.20.1-Forge_47.4.10/mods/[通用机械] Mekanism-1.20.1-10.4.16.80.jar')
-    compileOnly files('D:/桌面/我的世界/GTL/versions/1.20.1-Forge_47.4.10/mods/[应用能源：通用机械附属] Applied-Mekanistics-1.4.3.jar')
+    compileOnly fg.deobf("mekanism:Mekanism:${minecraft_version}-${mekanism_version}:api")
+    compileOnly fg.deobf("maven.modrinth:applied-mekanistics:${applied_mekanistics_version}")
     compileOnly "org.spongepowered:mixin:0.8.5"
     annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
     // Keep AE2 runtime optional in dev runs; enable with -PenableAe2Runtime=true.
@@ -111,12 +123,10 @@ dependencies {
         }
     }
 
-    // Optional JEI integration: compile against a local JEI jar when available.
-    def jeiLocalJar = file('run/mods/jei-1.20.1-forge-15.20.0.129.jar')
-    def jeiDisabledJar = file('run/mods/_disabled_by_run_dev_safe/jei-1.20.1-forge-15.20.0.129.jar')
-    def jeiCompileJar = jeiLocalJar.exists() ? jeiLocalJar : (jeiDisabledJar.exists() ? jeiDisabledJar : null)
-    if (jeiCompileJar != null) {
-        compileOnly files(jeiCompileJar)
+    // Optional JEI integration uses the public developer Maven artifact.
+    compileOnly fg.deobf("mezz.jei:jei-1.20.1-forge:${jei_version}")
+    if ((findProperty('enableJeiRuntime') ?: 'false').toString().toBoolean()) {
+        runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge:${jei_version}")
     }
 }
 
@@ -135,6 +145,10 @@ tasks.named('processResources', ProcessResources).configure {
     filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
         expand(replaceProperties + [project: project])
     }
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
 }
 
 tasks.named('jar', Jar).configure {

@@ -2,7 +2,17 @@
 
 AE2 Smart Pattern System is a smart pattern extension for AE2 and AE2UEL.
 
-It adds wildcard recipe expansion, item or fluid or gas marker support, recipe search, filter lists, and mod-based exclusion controls across multiple Minecraft version tracks.
+It adds wildcard recipe expansion, item or fluid or gas marker support, recipe search, filter lists, and mod-based filtering across multiple Minecraft version tracks.
+
+## Modern Pattern Filters
+
+The Forge 1.20.1 and NeoForge 1.21.1 tracks support independent mod filters for
+each pattern input and output:
+
+- Each input and output can define its own mod whitelist and blacklist.
+- Legacy `Excluded` data is migrated to the blacklist.
+- An explicitly empty whitelist rejects all candidates; it does not mean
+  "allow everything".
 
 ## Version Tracks
 

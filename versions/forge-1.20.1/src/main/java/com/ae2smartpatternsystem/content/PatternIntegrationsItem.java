@@ -1,6 +1,9 @@
 package com.ae2smartpatternsystem.content;
 
 import com.ae2smartpatternsystem.core.PatternDefinitionBridge;
+import com.ae2smartpatternsystem.core.codec.PatternNbtKeys;
+import com.ae2smartpatternsystem.core.model.FilterMode;
+import com.ae2smartpatternsystem.core.model.ModFilterRule;
 import com.ae2smartpatternsystem.core.model.PatternDefinition;
 import com.ae2smartpatternsystem.integration.mekanism.MekanismGasHelper;
 import net.minecraft.ChatFormatting;
@@ -33,8 +36,8 @@ public class PatternIntegrationsItem extends Item {
     private static final String TAG_INPUTS = "TechStartInputs";
     private static final String TAG_OUTPUTS = "TechStartOutputs";
     private static final String TAG_ENCODED_ITEM = "EncodedItem";
-    private static final String TAG_FILTER_MODE = "TechStartFilterMode";
-    private static final String TAG_FILTER_MODE_LEGACY = "FilterMode";
+    private static final String TAG_FILTER_MODE = PatternNbtKeys.TAG_FILTER_MODE;
+    private static final String TAG_FILTER_MODE_LEGACY = PatternNbtKeys.TAG_FILTER_MODE_LEGACY;
     private static final String TAG_INPUT_FLUIDS = "InputFluids";
     private static final String TAG_INPUT_FLUID_AMOUNTS = "InputFluidAmounts";
     private static final String TAG_OUTPUT_FLUIDS = "OutputFluids";
@@ -44,8 +47,6 @@ public class PatternIntegrationsItem extends Item {
     private static final String TAG_INPUT_GAS_AMOUNTS = "InputGasAmounts";
     private static final String TAG_OUTPUT_GASES = "OutputGases";
     private static final String TAG_OUTPUT_GAS_AMOUNTS = "OutputGasAmounts";
-    private static final String TAG_EXCLUDED_INPUT_MOD_IDS = "ExcludedInputModIds";
-    private static final String TAG_EXCLUDED_OUTPUT_MOD_IDS = "ExcludedOutputModIds";
     private static final String TAG_GAS_MARKER = "TechStartGasMarker";
     private static final String TAG_GAS_NAME = "TechStartGasName";
     private static final String TAG_GAS_AMOUNT = "TechStartGasAmount";
@@ -55,7 +56,6 @@ public class PatternIntegrationsItem extends Item {
     private static final String TAG_STACK = "Stack";
     private static final int FILTER_MODE_WHITELIST = 0;
     private static final int FILTER_MODE_BLACKLIST = 1;
-
     public PatternIntegrationsItem(Properties properties) {
         super(properties);
     }
@@ -101,11 +101,25 @@ public class PatternIntegrationsItem extends Item {
                 .withStyle(encoded ? ChatFormatting.GREEN : ChatFormatting.RED));
 
         int filterMode = readFilterMode(tag);
-        Component modeText = Component.translatable(filterMode == FILTER_MODE_WHITELIST
+        FilterMode inputModFilterMode = readModFilterMode(tag, true);
+        FilterMode outputModFilterMode = readModFilterMode(tag, false);
+        Component modeText = Component.translatable(filterMode == 0
                 ? "tooltip.ae2sps.filter_mode_whitelist"
                 : "tooltip.ae2sps.filter_mode_blacklist");
         tooltip.add(Component.translatable("tooltip.ae2sps.filter_mode", modeText)
-                .withStyle(filterMode == FILTER_MODE_WHITELIST ? ChatFormatting.AQUA : ChatFormatting.GOLD));
+                .withStyle(filterMode == 0 ? ChatFormatting.AQUA : ChatFormatting.GOLD));
+        tooltip.add(Component.translatable(
+                "tooltip.ae2sps.input_mod_filter",
+                Component.translatable(inputModFilterMode == FilterMode.WHITELIST
+                        ? "tooltip.ae2sps.filter_mode_whitelist"
+                        : "tooltip.ae2sps.filter_mode_blacklist"),
+                readModFilterIds(tag, true).size()).withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable(
+                "tooltip.ae2sps.output_mod_filter",
+                Component.translatable(outputModFilterMode == FilterMode.WHITELIST
+                        ? "tooltip.ae2sps.filter_mode_whitelist"
+                        : "tooltip.ae2sps.filter_mode_blacklist"),
+                readModFilterIds(tag, false).size()).withStyle(ChatFormatting.GRAY));
 
         if (tag != null && encoded) {
             List<Component> inputLines = buildEntryLines(tag, TAG_INPUTS, true);
@@ -148,8 +162,12 @@ public class PatternIntegrationsItem extends Item {
         tag.remove(TAG_INPUT_GAS_AMOUNTS);
         tag.remove(TAG_OUTPUT_GASES);
         tag.remove(TAG_OUTPUT_GAS_AMOUNTS);
-        tag.remove(TAG_EXCLUDED_INPUT_MOD_IDS);
-        tag.remove(TAG_EXCLUDED_OUTPUT_MOD_IDS);
+        tag.remove(PatternNbtKeys.TAG_INPUT_MOD_FILTER_MODE);
+        tag.remove(PatternNbtKeys.TAG_OUTPUT_MOD_FILTER_MODE);
+        tag.remove(PatternNbtKeys.TAG_INPUT_MOD_FILTER_IDS);
+        tag.remove(PatternNbtKeys.TAG_OUTPUT_MOD_FILTER_IDS);
+        tag.remove(PatternNbtKeys.TAG_EXCLUDED_INPUT_MOD_IDS);
+        tag.remove(PatternNbtKeys.TAG_EXCLUDED_OUTPUT_MOD_IDS);
         if (tag.isEmpty()) {
             stack.setTag(null);
         }
@@ -163,6 +181,53 @@ public class PatternIntegrationsItem extends Item {
             return tag.getInt(TAG_FILTER_MODE_LEGACY) == FILTER_MODE_WHITELIST ? FILTER_MODE_WHITELIST : FILTER_MODE_BLACKLIST;
         }
         return FILTER_MODE_BLACKLIST;
+    }
+
+    private FilterMode readModFilterMode(@Nullable CompoundTag tag, boolean input) {
+        if (tag == null) {
+            return FilterMode.BLACKLIST;
+        }
+        String modeKey = input
+                ? PatternNbtKeys.TAG_INPUT_MOD_FILTER_MODE
+                : PatternNbtKeys.TAG_OUTPUT_MOD_FILTER_MODE;
+        String idsKey = input
+                ? PatternNbtKeys.TAG_INPUT_MOD_FILTER_IDS
+                : PatternNbtKeys.TAG_OUTPUT_MOD_FILTER_IDS;
+        String legacyKey = input
+                ? PatternNbtKeys.TAG_EXCLUDED_INPUT_MOD_IDS
+                : PatternNbtKeys.TAG_EXCLUDED_OUTPUT_MOD_IDS;
+        if (tag.contains(modeKey, Tag.TAG_INT)) {
+            return FilterMode.fromSerializedValue(tag.getInt(modeKey));
+        }
+        if (tag.contains(idsKey, Tag.TAG_LIST) || tag.contains(legacyKey, Tag.TAG_LIST)) {
+            return FilterMode.BLACKLIST;
+        }
+        return FilterMode.BLACKLIST;
+    }
+
+    private List<String> readModFilterIds(@Nullable CompoundTag tag, boolean input) {
+        if (tag == null) {
+            return List.of();
+        }
+        String idsKey = input
+                ? PatternNbtKeys.TAG_INPUT_MOD_FILTER_IDS
+                : PatternNbtKeys.TAG_OUTPUT_MOD_FILTER_IDS;
+        String legacyKey = input
+                ? PatternNbtKeys.TAG_EXCLUDED_INPUT_MOD_IDS
+                : PatternNbtKeys.TAG_EXCLUDED_OUTPUT_MOD_IDS;
+        String sourceKey = tag.contains(idsKey, Tag.TAG_LIST) ? idsKey : legacyKey;
+        if (!tag.contains(sourceKey, Tag.TAG_LIST)) {
+            return List.of();
+        }
+        ListTag raw = tag.getList(sourceKey, Tag.TAG_STRING);
+        List<String> ids = new ArrayList<>(Math.min(raw.size(), 512));
+        for (int i = 0; i < raw.size() && ids.size() < 512; i++) {
+            String id = ModFilterRule.normalizeModId(raw.getString(i));
+            if (!id.isBlank() && id.length() <= 64 && !ids.contains(id)) {
+                ids.add(id);
+            }
+        }
+        return ids;
     }
 
     private List<Component> buildEntryLines(CompoundTag tag, String listKey, boolean input) {
