@@ -81,6 +81,7 @@ sourceSets.test.java { srcDir '../shared/common-core/src/test/java' }
 repositories {
     mavenCentral()
     maven { url = 'https://maven.minecraftforge.net' }
+    maven { url = 'https://maven.blamejared.com' }
     maven {
         name = 'Modmaven'
         url = 'https://modmaven.dev/'
@@ -122,12 +123,10 @@ dependencies {
         }
     }
 
-    // Optional JEI integration: compile against a local JEI jar when available.
-    def jeiLocalJar = file('run/mods/jei-1.20.1-forge-15.20.0.129.jar')
-    def jeiDisabledJar = file('run/mods/_disabled_by_run_dev_safe/jei-1.20.1-forge-15.20.0.129.jar')
-    def jeiCompileJar = jeiLocalJar.exists() ? jeiLocalJar : (jeiDisabledJar.exists() ? jeiDisabledJar : null)
-    if (jeiCompileJar != null) {
-        compileOnly files(jeiCompileJar)
+    // Optional JEI integration uses the public developer Maven artifact.
+    compileOnly fg.deobf("mezz.jei:jei-1.20.1-forge:${jei_version}")
+    if ((findProperty('enableJeiRuntime') ?: 'false').toString().toBoolean()) {
+        runtimeOnly fg.deobf("mezz.jei:jei-1.20.1-forge:${jei_version}")
     }
 }
 
